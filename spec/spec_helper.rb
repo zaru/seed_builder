@@ -1,5 +1,8 @@
 require "bundler/setup"
 require "seed_builder"
+require "pry"
+
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
