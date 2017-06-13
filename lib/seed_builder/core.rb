@@ -47,7 +47,6 @@ module SeedBuilder
         if "type" == key && meta[:sti]
           data[key.to_sym] = model.to_s
         else
-          p attr
           data[key.to_sym] = Object.const_get("SeedBuilder::Type::#{attr.type.to_s.capitalize}").new(key, model, self).value
         end
       end

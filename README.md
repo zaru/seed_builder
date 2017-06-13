@@ -1,5 +1,19 @@
 # SeedBuilder
 
+** Work in Progress ** 🙏
+
+This gem will automatically generate seeds.
+
+## Support associations
+
+- has_many, has_one, belongs_to
+- STI, polymorphic
+- has_many through, HABTM (in development)
+
+## Support datatype
+
+I plan to use `facker`.
+
 ## Installation
 
 Add this line to your application's Gemfile:
