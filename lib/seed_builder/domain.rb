@@ -22,5 +22,19 @@ module SeedBuilder
       end
     end
 
+    def polymorphics
+      @polymorphics ||= associations.select do |assoc|
+        assoc.options[:as]
+      end.map do |assoc|
+        {
+          as: assoc.options[:as], 
+          klass: assoc.class_name, 
+          src: assoc.active_record
+        }
+      end.group_by do |h|
+        h[:as]
+      end
+    end
+
   end
 end

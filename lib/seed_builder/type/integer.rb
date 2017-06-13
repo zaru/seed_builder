@@ -5,7 +5,7 @@ module SeedBuilder
         assoc_keys = association_keys @model
         rel = assoc_keys.select{|assoc| @key == assoc[:key]}.first
         if rel
-          rel[:klass].all.sample.id # めっちゃ非効率
+          rel[:klasses].sample.all.sample.id # めっちゃ非効率
         else
           rand(1000) + 1 # 適当な数値を返す
         end

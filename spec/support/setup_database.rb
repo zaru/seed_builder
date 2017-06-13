@@ -6,20 +6,35 @@ class CreateAllTables < ActiveRecord::Migration[4.2]
   def self.up
     create_table(:users) do |t|
       t.string :name
+      t.timestamps
     end
 
     create_table(:articles) do |t|
       t.string :title
       t.references :user
+      t.timestamps
     end
 
     create_table(:comments) do |t|
       t.text :content
       t.references :articles
       t.references :user
+      t.timestamps
     end
+
+    create_table(:companies) do |t|
+      t.string :name
+      t.timestamps
+    end
+
+    create_table(:messages) do |t|
+      t.text :content
+      t.references :messagable, polymorphic: true
+      t.timestamps
+    end
+
   end
 end
 
-ActiveRecord::Migration.verbose = false
+# ActiveRecord::Migration.verbose = false
 CreateAllTables.up

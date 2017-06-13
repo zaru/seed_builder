@@ -1,8 +1,8 @@
 module SeedBuilder
   module Type
-    class String < Base
+    class Datetime < Base
       def value
-        "it's string value."
+        Time.now
       end
     end
   end

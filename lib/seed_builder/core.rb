@@ -1,11 +1,12 @@
 module SeedBuilder
   class Core
-    attr_reader :relationships, :models
+    attr_reader :relationships, :models, :polymorphics
 
     def initialize
       domain = Domain.new
       @relationships = domain.relationships
       @models = domain.models
+      @polymorphics = domain.polymorphics
     end
 
     def execute
@@ -36,11 +37,12 @@ module SeedBuilder
     end
 
     def generate model
+      # TODO: この時点でポリモーフィックの関連を決定しないと _type / _id の組み合わせを一致させるのがつらい
       data = model.new
       attrs = model.attribute_types
       attrs.each do |key, attr|
         next if "id" == key
-        data[key.to_sym] = Object.const_get("SeedBuilder::Type::#{attr.type.to_s.capitalize}").new(key, model).value
+        data[key.to_sym] = Object.const_get("SeedBuilder::Type::#{attr.type.to_s.capitalize}").new(key, model, self).value
       end
       data.save
     end
