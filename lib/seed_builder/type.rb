@@ -1,2 +1,5 @@
 require "seed_builder/type/base"
 require "seed_builder/type/integer"
+require "seed_builder/type/string"
+require "seed_builder/type/text"
+require "seed_builder/type/datetime"
