@@ -47,8 +47,16 @@ module SeedBuilder
         if "type" == key && meta[:sti]
           data[key.to_sym] = model.to_s
         else
+          p attr
           data[key.to_sym] = Object.const_get("SeedBuilder::Type::#{attr.type.to_s.capitalize}").new(key, model, self).value
         end
+      end
+
+      if meta[:polymorphics]
+        poly = meta[:polymorphics].sample
+        src = poly[:src].all.sample
+        data[poly[:key].to_sym] = src.id
+        data[poly[:type].to_sym] = src.class.to_s
       end
 
       unless data.save

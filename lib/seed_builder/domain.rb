@@ -55,7 +55,7 @@ module SeedBuilder
         {
           as: assoc.options[:as],
           key: assoc.foreign_key,
-          type: assoc.foreign_type,
+          type: assoc.type,
           dst: assoc.klass,
           src: assoc.active_record
         }
