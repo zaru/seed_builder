@@ -1,6 +1,6 @@
 # SeedBuilder
 
-** Work in Progress ** 🙏
+**Work in Progress** 🙏
 
 This gem will automatically generate seeds.
 
