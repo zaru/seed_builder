@@ -33,6 +33,17 @@ class CreateAllTables < ActiveRecord::Migration[4.2]
       t.timestamps
     end
 
+    create_table(:products) do |t|
+      t.string :name
+      t.string :type
+      t.timestamps
+    end
+
+    create_table(:reviews) do |t|
+      t.text :content
+      t.references :product
+      t.timestamps
+    end
   end
 end
 

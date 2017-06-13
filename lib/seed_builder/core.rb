@@ -1,11 +1,12 @@
 module SeedBuilder
   class Core
-    attr_reader :relationships, :models, :polymorphics
+    attr_reader :relationships, :models, :polymorphics, :models_with_meta
 
     def initialize
       domain = Domain.new
       @relationships = domain.relationships
       @models = domain.models
+      @models_with_meta = domain.models_with_meta
       @polymorphics = domain.polymorphics
     end
 
@@ -25,7 +26,6 @@ module SeedBuilder
         next unless @relationships.select{|r| rel[:src].name == r[:dst].name}.size.zero?
         @relationships.delete_if{|r| rel[:src].name == r[:src].name}
         @models.delete_if{|r| rel[:src].name == r.name}
-
         20.times{generate rel[:src]}
       end
     end
@@ -38,13 +38,22 @@ module SeedBuilder
 
     def generate model
       # TODO: この時点でポリモーフィックの関連を決定しないと _type / _id の組み合わせを一致させるのがつらい
+      meta = @models_with_meta.find{|m| model == m[:class]}
       data = model.new
       attrs = model.attribute_types
+
       attrs.each do |key, attr|
         next if "id" == key
-        data[key.to_sym] = Object.const_get("SeedBuilder::Type::#{attr.type.to_s.capitalize}").new(key, model, self).value
+        if "type" == key && meta[:sti]
+          data[key.to_sym] = model.to_s
+        else
+          data[key.to_sym] = Object.const_get("SeedBuilder::Type::#{attr.type.to_s.capitalize}").new(key, model, self).value
+        end
       end
-      data.save
+
+      unless data.save
+        p data.errors
+      end
     end
   end
 end
