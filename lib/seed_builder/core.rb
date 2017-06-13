@@ -37,7 +37,7 @@ module SeedBuilder
     end
 
     def generate model
-      # TODO: この時点でポリモーフィックの関連を決定しないと _type / _id の組み合わせを一致させるのがつらい
+      # TODO: ポリモーフィックとSTIをここでベタ対応しているのでTypeモジュールと同じようにリファクタ対象
       meta = @models_with_meta.find{|m| model == m[:class]}
       data = model.new
       attrs = model.attribute_types
