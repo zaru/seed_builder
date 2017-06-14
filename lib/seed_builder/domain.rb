@@ -42,7 +42,10 @@ module SeedBuilder
 
     def relationships
       @relationships ||= associations.select do |ref|
-        !ref.is_a? ActiveRecord::Reflection::BelongsToReflection # 親からの目線しかいらない（modelファイルが完全な前提）
+        # 親からの目線しかいらない（modelファイルが完全な前提）
+        !ref.is_a?(ActiveRecord::Reflection::BelongsToReflection) && 
+        # has_many through自体はいらない
+        !ref.is_a?(ActiveRecord::Reflection::ThroughReflection)
       end.map do |ref|
         { src: ref.original_model, dst: ref.klass, association: ref.class }
       end

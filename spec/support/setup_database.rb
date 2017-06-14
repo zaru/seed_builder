@@ -44,6 +44,17 @@ class CreateAllTables < ActiveRecord::Migration[4.2]
       t.references :product
       t.timestamps
     end
+
+    create_table(:tags) do |t|
+      t.string :name
+      t.timestamps
+    end
+
+    create_table(:article_tags) do |t|
+      t.references :article
+      t.references :tag
+      t.timestamps
+    end
   end
 end
 

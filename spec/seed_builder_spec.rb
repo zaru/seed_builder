@@ -8,6 +8,8 @@ class User < ActiveRecord::Base
 end
 class Article < ActiveRecord::Base
   has_many :comments
+  has_many :article_tags
+  has_many :tags, through: :article_tags
   belongs_to :user
 end
 class Comment < ActiveRecord::Base
@@ -29,6 +31,14 @@ class Movie < Product
 end
 class Review < ActiveRecord::Base
   belongs_to :product
+end
+class Tag < ActiveRecord::Base
+  has_many :article_tags
+  has_many :articles, through: :article_tags
+end
+class ArticleTag < ActiveRecord::Base
+  belongs_to :article
+  belongs_to :tag
 end
 
 RSpec.describe SeedBuilder do
