@@ -70,6 +70,15 @@ class CreateAllTables < ActiveRecord::Migration[4.2]
       t.references :role
       t.timestamps
     end
+
+    create_table(:blogs) do |t|
+      t.string :title
+      t.integer :number
+      t.string :unique_id
+      t.string :katakana
+      t.timestamps
+    end
+    add_index :blogs, :unique_id, unique: true
   end
 end
 
