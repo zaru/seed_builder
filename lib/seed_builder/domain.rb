@@ -48,7 +48,7 @@ module SeedBuilder
         !ref.is_a?(ActiveRecord::Reflection::ThroughReflection)
       end.map do |ref|
         if ref.is_a? ActiveRecord::Reflection::HasAndBelongsToManyReflection
-          relation_name = "#{ref.klass.name}::HABTM_#{ref.original_model.name.pluralize}"
+          relation_name = "#{ref.klass.name}::HABTM_#{ref.active_record.name.pluralize}"
           klass = Object.const_get relation_name
         else
           klass = ref.klass

@@ -40,11 +40,13 @@ class ArticleTag < ActiveRecord::Base
   belongs_to :article
   belongs_to :tag
 end
-class Administrator < ActiveRecord::Base
+class Account < ActiveRecord::Base
   has_and_belongs_to_many :roles
 end
+class Administrator < Account
+end
 class Role < ActiveRecord::Base
-  has_and_belongs_to_many :administrators
+  has_and_belongs_to_many :accounts
 end
 
 RSpec.describe SeedBuilder do

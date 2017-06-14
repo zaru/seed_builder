@@ -56,16 +56,17 @@ class CreateAllTables < ActiveRecord::Migration[4.2]
       t.timestamps
     end
 
-    create_table(:administrators) do |t|
+    create_table(:accounts) do |t|
       t.string :name
+      t.string :type
       t.timestamps
     end
     create_table(:roles) do |t|
       t.string :name
       t.timestamps
     end
-    create_table(:administrators_roles) do |t|
-      t.references :administrator
+    create_table(:accounts_roles) do |t|
+      t.references :account
       t.references :role
       t.timestamps
     end
