@@ -47,7 +47,13 @@ module SeedBuilder
         # has_many through自体はいらない
         !ref.is_a?(ActiveRecord::Reflection::ThroughReflection)
       end.map do |ref|
-        { src: ref.original_model, dst: ref.klass, association: ref.class }
+        if ref.is_a? ActiveRecord::Reflection::HasAndBelongsToManyReflection
+          relation_name = "#{ref.klass.name}::HABTM_#{ref.original_model.name.pluralize}"
+          klass = Object.const_get relation_name
+        else
+          klass = ref.klass
+        end
+        { src: ref.original_model, dst: klass, association: ref.class }
       end
     end
 
@@ -74,6 +80,10 @@ module SeedBuilder
         return true
       end
       false
+    end
+
+    def habtm_model? model
+      model.name.start_with? "HABTM_"
     end
 
     def superclasses

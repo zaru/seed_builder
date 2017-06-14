@@ -16,7 +16,12 @@ module SeedBuilder
           if assoc.options[:polymorphic]
             assoc_keys << { key: assoc.foreign_key, klasses: @core.polymorphics[assoc.name].map{|poly| poly[:src]} }
           elsif assoc.is_a? ActiveRecord::Reflection::BelongsToReflection
-            assoc_keys << { key: assoc.foreign_key, klasses: [assoc.klass] }
+            if "left_side_id" == assoc.foreign_key
+              foreign_key = assoc.klass.reflect_on_all_associations.first.foreign_key
+            else
+              foreign_key = assoc.foreign_key
+            end
+            assoc_keys << { key: foreign_key, klasses: [assoc.klass] }
           end
         end
         assoc_keys

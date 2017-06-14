@@ -55,6 +55,20 @@ class CreateAllTables < ActiveRecord::Migration[4.2]
       t.references :tag
       t.timestamps
     end
+
+    create_table(:administrators) do |t|
+      t.string :name
+      t.timestamps
+    end
+    create_table(:roles) do |t|
+      t.string :name
+      t.timestamps
+    end
+    create_table(:administrators_roles) do |t|
+      t.references :administrator
+      t.references :role
+      t.timestamps
+    end
   end
 end
 

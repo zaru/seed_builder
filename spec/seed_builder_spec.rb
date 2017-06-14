@@ -40,6 +40,12 @@ class ArticleTag < ActiveRecord::Base
   belongs_to :article
   belongs_to :tag
 end
+class Administrator < ActiveRecord::Base
+  has_and_belongs_to_many :roles
+end
+class Role < ActiveRecord::Base
+  has_and_belongs_to_many :administrators
+end
 
 RSpec.describe SeedBuilder do
   it "sample spec" do
