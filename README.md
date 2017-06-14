@@ -8,7 +8,7 @@ This gem will automatically generate seeds.
 
 - has_many, has_one, belongs_to
 - STI, polymorphic
-- has_many through, HABTM (in development)
+- has_many through, HABTM
 
 ## Support datatype
 
