@@ -73,5 +73,5 @@ class CreateAllTables < ActiveRecord::Migration[4.2]
   end
 end
 
-# ActiveRecord::Migration.verbose = false
+ActiveRecord::Migration.verbose = false
 CreateAllTables.up
