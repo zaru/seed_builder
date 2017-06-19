@@ -1,7 +1,9 @@
 module SeedBuilder
   module Type
     class Integer < Base
-      MAX = 2147483648      
+
+      MAX = 2147483648
+
       def value
         assoc_keys = association_keys @model
         rel = assoc_keys.select{|assoc| @key == assoc[:key]}.first
@@ -10,6 +12,10 @@ module SeedBuilder
         else
           valid_data
         end
+      end
+
+      def random_generate
+        rand(MAX) + 1
       end
 
       private

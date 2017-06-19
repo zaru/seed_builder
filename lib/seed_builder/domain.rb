@@ -6,6 +6,14 @@ module SeedBuilder
       # Rails.application.eager_load! #TODO: rakeタスクとかに移譲する
     end
 
+    def entities
+      @entities = []
+      models.each do |model|
+        @entities << Entity.new(model)
+      end
+      @entities
+    end
+
     def models_with_meta
       models.map do |model|
         {

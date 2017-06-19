@@ -4,6 +4,7 @@ module SeedBuilder
 
     def initialize
       domain = Domain.new
+      @entities = domain.entities
       @relationships = domain.relationships
       @models = domain.models
       @models_with_meta = domain.models_with_meta
@@ -37,26 +38,26 @@ module SeedBuilder
     end
 
     def generate model
-      # TODO: ポリモーフィックとSTIをここでベタ対応しているのでTypeモジュールと同じようにリファクタ対象
-      meta = @models_with_meta.find{|m| model == m[:class]}
-      data = model.new
-      attrs = model.attribute_types
+      entity = @entities.find{|e| model == e.model}
 
-      attrs.each do |key, attr|
-        next if "id" == key
-        if "type" == key && meta[:sti]
-          data[key.to_sym] = model.to_s
+      data = entity.model.new
+
+      entity.attrs.each do |attr|
+        next if attr.auto_generate?
+        if attr.sti_type?
+          data[attr.key.to_sym] = entity.model.to_s
         else
-          data[key.to_sym] = Object.const_get("SeedBuilder::Type::#{attr.type.to_s.capitalize}").new(key, model, self).value
+          data[attr.key.to_sym] = Object.const_get("SeedBuilder::Type::#{attr.type.to_s.capitalize}").new(attr, entity, self).value
         end
       end
 
-      if meta[:polymorphics]
-        poly = meta[:polymorphics].sample
-        src = poly[:src].all.sample
-        data[poly[:key].to_sym] = src.id
-        data[poly[:type].to_sym] = src.class.to_s
-      end
+      # TODO: ポリモーフィックの上書き処理をどうにかする
+      # if meta[:polymorphics]
+      #   poly = meta[:polymorphics].sample
+      #   src = poly[:src].all.sample
+      #   data[poly[:key].to_sym] = src.id
+      #   data[poly[:type].to_sym] = src.class.to_s
+      # end
 
       unless data.save
         p data.errors

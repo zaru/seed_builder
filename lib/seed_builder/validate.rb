@@ -1,0 +1,1 @@
+require "seed_builder/validate/unique"
