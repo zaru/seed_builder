@@ -81,6 +81,11 @@ class CreateAllTables < ActiveRecord::Migration[4.2]
     end
     add_index :blogs, :unique_id, unique: true
     add_index :blogs, :physical_unique_id, unique: true
+
+    create_table(:photos) do |t|
+      t.string :file
+      t.timestamps
+    end
   end
 end
 

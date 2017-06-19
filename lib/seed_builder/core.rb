@@ -46,6 +46,8 @@ module SeedBuilder
         next if attr.auto_generate?
         if attr.sti_type?
           data[attr.key.to_sym] = entity.model.to_s
+        elsif attr.carrier_wave?
+          Upload::CarrierWave.new(data, attr.key.to_sym).value
         else
           data[attr.key.to_sym] = Object.const_get("SeedBuilder::Type::#{attr.type.to_s.capitalize}").new(attr, entity, self).value
         end

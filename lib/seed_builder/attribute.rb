@@ -30,6 +30,10 @@ module SeedBuilder
       @valid_rules
     end
 
+    def carrier_wave?
+      @model.new.send(@key).is_a? CarrierWave::Uploader::Base
+    end
+
     def foreign_key?
       # ポリモーフィックの外部キーはこの時点でリレーション先のモデルを確定できないので、普通のフィールドとして扱う
       return false if polymorphic_foreign_key?

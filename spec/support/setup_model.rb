@@ -51,3 +51,14 @@ class Blog < ActiveRecord::Base
   validates :number, presence: true, numericality: { only_integer: true, odd: true }
   validates :unique_id, presence: true, uniqueness: true
 end
+
+class PhotoUploader < CarrierWave::Uploader::Base
+  storage :file
+
+  def extension_whitelist
+    %w(png)
+  end
+end
+class Photo < ActiveRecord::Base
+  mount_uploader :file, PhotoUploader
+end
