@@ -17,7 +17,7 @@ class CreateAllTables < ActiveRecord::Migration[4.2]
 
     create_table(:comments) do |t|
       t.text :content
-      t.references :articles
+      t.references :article
       t.references :user
       t.timestamps
     end
@@ -75,10 +75,12 @@ class CreateAllTables < ActiveRecord::Migration[4.2]
       t.string :title
       t.integer :number
       t.string :unique_id
+      t.string :physical_unique_id
       t.string :katakana
       t.timestamps
     end
     add_index :blogs, :unique_id, unique: true
+    add_index :blogs, :physical_unique_id, unique: true
   end
 end
 

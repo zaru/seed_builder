@@ -3,11 +3,12 @@ module SeedBuilder
 
     attr_reader :key, :type, :model
 
-    def initialize attr, model
+    def initialize attr, entity
       @key = attr.first
       @active_model_type = attr.last
       @type = @active_model_type.type
-      @model = model
+      @model = entity.model
+      @entity = entity
     end
 
     def valid_rules
@@ -17,6 +18,24 @@ module SeedBuilder
         @valid_rules << Validate::Unique
       end
       @valid_rules
+    end
+
+    def foreign_key?
+      # ポリモーフィックの外部キーはこの時点でリレーション先のモデルを確定できないので、普通のフィールドとして扱う
+      return false if polymorphic_foreign_key?
+      return true if @entity.foreign_keys.find{|f| @key == f[:foreign_key] }
+      return true if "left_side_id" == @key
+      false
+    end
+
+    def foreign_klass
+      return nil if polymorphic_foreign_key?
+
+      if foreign = @entity.foreign_keys.find{|f| @key == f[:foreign_key] }
+        return foreign[:klass]
+      end
+
+      # TODO: left_side_id の対応
     end
 
     def auto_generate?
@@ -29,6 +48,10 @@ module SeedBuilder
     end
 
     private
+
+    def polymorphic_foreign_key?
+      @entity.polymorphic_columns.find{|c| @key == c[:foreign_key] } ? true : false
+    end
 
     def unique_index?
       ActiveRecord::Base.connection.indexes(@model.table_name).select{|i| i.columns.include?(@key) && i.unique}.size.zero? ? false : true

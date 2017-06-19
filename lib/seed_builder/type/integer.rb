@@ -5,10 +5,8 @@ module SeedBuilder
       MAX = 2147483648
 
       def value
-        assoc_keys = association_keys @model
-        rel = assoc_keys.select{|assoc| @key == assoc[:key]}.first
-        if rel
-          rel[:klasses].sample.all.sample.id # めっちゃ非効率
+        if @attr.foreign_key?
+          @attr.foreign_klass.all.sample.id # めっちゃ非効率
         else
           valid_data
         end
@@ -21,7 +19,8 @@ module SeedBuilder
       private
 
       def valid_data
-        val = 0
+        val = random_generate
+        # TODO: validateモジュールにルールを移植する
         @model.validators.select{|v| v.attributes.include?(@key.to_sym) }.each do |v|
           if v.is_a? ActiveModel::Validations::NumericalityValidator
             val = rand_odd if v.options[:odd]
