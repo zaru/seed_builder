@@ -2,14 +2,6 @@ module SeedBuilder
   module Type
     class String < Base
       def value
-        # TODO: ここのポリモーフィック用の処理、もう必要ない気がするので検証する
-        # poly_keys = polymorphic_keys @model
-        # rel = poly_keys.select{|poly| @key == poly[:key]}.first
-        # if rel
-        #   rel[:klasses].sample.to_s
-        # else
-        #   valid_data
-        # end
         valid_data
       end
 
