@@ -23,7 +23,7 @@ module SeedBuilder
       def valid_data
         value = random_generate
         @attr.valid_rules.each do |rule|
-          value = rule.value @model, @key, self, value
+          value = rule.value self, value
         end
         value
       end

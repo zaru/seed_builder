@@ -47,7 +47,7 @@ class Role < ActiveRecord::Base
   has_and_belongs_to_many :accounts
 end
 class Blog < ActiveRecord::Base
-  validates :title, presence: true,length: { in: 6..20 }
+  validates :title, presence: true,length: { in: 2..3 }
   validates :number, presence: true, numericality: { only_integer: true, odd: true }
   validates :unique_id, presence: true, uniqueness: true
 end

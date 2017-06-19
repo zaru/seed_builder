@@ -15,8 +15,18 @@ module SeedBuilder
       return @valid_rules unless @valid_rules.nil?
       @valid_rules = []
       if unique_index? || unique?
-        @valid_rules << Validate::Unique
+        @valid_rules << Validate::Unique.new(model: @model, attr_key: @key)
       end
+
+      @model.validators.select{|validator| validator.attributes.include?(@key.to_sym)}.each do |validator|
+        if validator.is_a? ActiveRecord::Validations::LengthValidator
+          @valid_rules << Validate::Length.new(model: @model, attr_key: @key, options: validator.options)
+        elsif validator.is_a? ActiveModel::Validations::NumericalityValidator
+          @valid_rules << Validate::Numericality.new(model: @model, attr_key: @key, options: validator.options)
+        end
+        # TODO: 以下、対応したいバリデーションルールにそって作る
+      end
+
       @valid_rules
     end
 

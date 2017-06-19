@@ -19,23 +19,12 @@ module SeedBuilder
       private
 
       def valid_data
-        val = random_generate
-        # TODO: validateモジュールにルールを移植する
-        @model.validators.select{|v| v.attributes.include?(@key.to_sym) }.each do |v|
-          if v.is_a? ActiveModel::Validations::NumericalityValidator
-            val = rand_odd if v.options[:odd]
-            val = rand_even if v.options[:even]
-          end
+        value = random_generate
+
+        @attr.valid_rules.each do |rule|
+          value = rule.value self, value
         end
-        val
-      end
-
-      def rand_odd
-        rand(MAX / 2) * 2 + 1
-      end
-
-      def rand_even
-        rand(MAX / 2) * 2
+        value
       end
     end
   end
