@@ -5,7 +5,7 @@ module SeedBuilder
       MAX = 2147483648
 
       def initialize model:, attr_key:, options: {}
-        @model = model
+        @entity = model
         @attr_key = attr_key
         @options = options
       end

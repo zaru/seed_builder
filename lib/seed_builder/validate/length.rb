@@ -3,7 +3,7 @@ module SeedBuilder
     class Length
 
       def initialize model:, attr_key:, options: {}
-        @model = model
+        @entity = model
         @attr_key = attr_key
         @minimum = options[:minimum] || 0
         @maximum = options[:maximum] || 255

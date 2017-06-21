@@ -2,12 +2,12 @@
 class User < ActiveRecord::Base
   has_many :articles
   has_many :comments
-  # has_many :messages, as: :messagable
+  has_many :messages, as: :messagable
 end
 class Article < ActiveRecord::Base
   has_many :comments
-  # has_many :article_tags
-  # has_many :tags, through: :article_tags
+  has_many :article_tags
+  has_many :tags, through: :article_tags
   belongs_to :user
 end
 class Comment < ActiveRecord::Base

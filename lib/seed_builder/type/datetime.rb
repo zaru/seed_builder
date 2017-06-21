@@ -1,7 +1,11 @@
 module SeedBuilder
   module Type
     class Datetime < Base
-      def value
+
+      def initialize active_model_type
+      end
+
+      def generate
         Time.now
       end
     end
