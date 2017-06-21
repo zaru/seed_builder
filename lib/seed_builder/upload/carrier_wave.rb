@@ -3,14 +3,14 @@ module SeedBuilder
     class CarrierWave
 
       def initialize model, key
-        @model = model
+        @entity = model
         @key = key
       end
 
       def value
-        ext = @model.send(@key).extension_whitelist.first
+        ext = @entity.send(@key).extension_whitelist.first
         File.open("files/test.#{ext}") do |file|
-          @model.send(@key.to_s + "=", file)
+          @entity.send(@key.to_s + "=", file)
         end
       end
 

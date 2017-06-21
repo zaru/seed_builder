@@ -1,5 +1,6 @@
 require "seed_builder/version"
 require "active_record"
+require "pry"
 
 require "carrierwave"
 require "carrierwave/orm/activerecord"
