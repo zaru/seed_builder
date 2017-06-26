@@ -29,10 +29,19 @@ module SeedBuilder
     private
 
     def validates
-      @validates = [
-        Validate::Unique::String
-      ]
+      validators = @model_object._validators[@key.to_sym]
+      instances = []
+      validators.each do |v|
+        # ex) v.class.to_s
+        #     => "ActiveRecord::Validations::LengthValidator"
+        class_name = v.class.name.demodulize
+        options    = v.options
+        instances << "SeedBuilder::Validate::#{class_name}"
+                          .constantize.new(options)
+      end
+      instances
     end
+
 
     def carrier_wave?
       @entity.new.send(@key).is_a? CarrierWave::Uploader::Base

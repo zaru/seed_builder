@@ -1,8 +1,8 @@
 module SeedBuilder
   module Validate
-    class Length < SeedBuilder::Validate::Base
+    class LengthValidator < SeedBuilder::Validate::Base
 
-      def initialize maximum:, minimum:
+      def initialize maximum: 255, minimum: 0
         @maximum = maximum
         @minimum = minimum
       end
