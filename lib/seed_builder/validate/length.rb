@@ -1,21 +1,18 @@
 module SeedBuilder
   module Validate
-    class Length
+    class Length < SeedBuilder::Validate::Base
 
-      def initialize model:, attr_key:, options: {}
-        @entity = model
-        @attr_key = attr_key
-        @minimum = options[:minimum] || 0
-        @maximum = options[:maximum] || 255
+      def initialize maximum:, minimum:
+        @maximum = maximum
+        @minimum = minimum
       end
 
-      def value type_obj, value = ""
-        # TODO: String型しか想定していないので他のも必要であれば対応する
-        return value.ljust @maximum, "a" if value.size < @minimum
-        return value[0, @maximum - 1] if value.size > @maximum
-        value
+      # TODO: String型しか想定していないので他のも必要であれば対応する
+      def call data, entity
+        return data.ljust @maximum, "a" if data.size < @minimum
+        return data[0, @maximum - 1]    if data.size > @maximum
+        data
       end
 
     end
   end
-end
