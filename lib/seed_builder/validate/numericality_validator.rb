@@ -9,7 +9,6 @@ module SeedBuilder
         @even = even
       end
 
-      # def call type_obj, value = ""
       def call data, entity
         return rand_odd  if @odd
         return rand_even if @even
