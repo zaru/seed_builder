@@ -34,7 +34,7 @@ module SeedBuilder
       validators.each do |v|
         # ex) v.class.to_s
         #     => "ActiveRecord::Validations::LengthValidator"
-        class_name = v.class.to_s.split('::').last
+        class_name = v.class.name.demodulize
         options    = v.options
         instances << "SeedBuilder::Validate::#{class_name}"
                           .constantize.new(options)
