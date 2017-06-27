@@ -9,7 +9,7 @@ module SeedBuilder
         @even = even
       end
 
-      def call data, entity
+      def call data:, entity:, key:
         return rand_odd  if @odd
         return rand_even if @even
         MAX

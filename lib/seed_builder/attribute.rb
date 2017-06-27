@@ -20,7 +20,8 @@ module SeedBuilder
       else
         data = @type.generate
         validates.each do |validate|
-          data = validate.call data, @entity
+          # TODO: ここの引数増えちゃった問題
+          data = validate.call(data: data, entity: @entity, key: @key)
         end
         @model_object[@key] = data
       end
