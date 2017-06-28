@@ -7,10 +7,14 @@ module SeedBuilder
         @minimum = minimum
       end
 
-      # TODO: String型しか想定していないので他のも必要であれば対応する
+      # NOTE: data のタイプは問わない
       def call data:, entity:, key:
-        return data.ljust @maximum, "a" if data.size < @minimum
-        return data[0, @maximum - 1]    if data.size > @maximum
+
+        # NOTE: data.ljust や data[x, y] は Integer には効かないため。
+        str = data.to_s
+
+        return str.ljust(@maximum), "a" if data.size < @minimum
+        return str[0, @maximum]    if data.size > @maximum
         data
       end
 
