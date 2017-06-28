@@ -21,7 +21,7 @@ module SeedBuilder
         data = @type.generate
         validates.each do |validate|
           # TODO: ここの引数増えちゃった問題
-          data = validate.call(data: data, entity: @entity, key: @key)
+          data = validate.call(data: data, entity: @entity)
         end
         @model_object[@key] = data
       end

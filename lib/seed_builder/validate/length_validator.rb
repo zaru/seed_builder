@@ -8,7 +8,7 @@ module SeedBuilder
       end
 
       # NOTE: data のタイプは問わない
-      def call data:, entity:, key:
+      def call data:, entity:
 
         # NOTE: data.ljust や data[x, y] は Integer には効かないため。
         str = data.to_s
