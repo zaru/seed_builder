@@ -14,7 +14,7 @@ module SeedBuilder
         str = data.to_s
 
         return str.ljust(@maximum), "a" if data.size < @minimum
-        return str[0, @maximum]    if data.size > @maximum
+        return str[0, @maximum]         if data.size > @maximum
         data
       end
 
