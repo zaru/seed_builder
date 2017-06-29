@@ -22,45 +22,16 @@ module SeedBuilder
 
         case @type
         when :string, :text, :integer, :big_integer, :decimal
-          data = ValidData.new(@type, @model_object, @key).generate
+          data = ValidData.new(type: @type, model_object: @model_object, key: @key).generate
         else
           data = @type.generate
         end
-
-        # case @type
-        # when :string, :text
-        #   # somthing
-        #   data = ValidateGod.new(@type, @model_object, @key).call
-        # when :integer, :big_integer, :decimal
-        #   # somthing
-        #   data = ValidateGod.new(@type, @model_object, @key).call
-        # end
-        #
-        # validates.each do |validate|
-        #   # TODO: ここの引数増えちゃった問題
-        #   data = validate.call(data: data, entity: @entity)
-        # end
 
         @model_object[@key] = data
       end
     end
 
     private
-
-    def validates
-      validators = @model_object._validators[@key.to_sym]
-      instances = []
-      validators.each do |v|
-        # ex) v.class.to_s
-        #     => "ActiveRecord::Validations::LengthValidator"
-        class_name = v.class.name.demodulize
-        options    = v.options
-        instances << "SeedBuilder::Validate::#{class_name}"
-                          .constantize.new(options)
-      end
-      instances
-    end
-
 
     def carrier_wave?
       @entity.new.send(@key).is_a? CarrierWave::Uploader::Base
