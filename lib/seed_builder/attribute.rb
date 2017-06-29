@@ -19,13 +19,19 @@ module SeedBuilder
         @model_object[@key] = "paper clip data"
       else
 
+      # NOTE: type が下の場合は、validation を考慮する。それ以外は validation を無視。
+      need_valid_models = %w( String Text Integer BigInteger Decimal )
 
-        case @type
-        when :string, :text, :integer, :big_integer, :decimal
-          data = ValidData.new(type: @type, model_object: @model_object, key: @key).generate
-        else
-          data = @type.generate
-        end
+      case @type.class.name.demodulize
+      when *need_valid_models
+        data = ValidData.new(
+                          type:         @type,
+                          model_object: @model_object,
+                          key:          @key
+                          ).generate
+      else
+        data = @type.generate
+      end
 
         @model_object[@key] = data
       end
