@@ -4,10 +4,10 @@ module SeedBuilder
     attr_reader :key, :type, :validates, :entity
 
     def initialize key, active_model_type, entity, model_object
-      @key = key
-      @type = Object.const_get("SeedBuilder::Type::#{active_model_type.type.to_s.capitalize}").new active_model_type
-      @entity = entity
+      @key          = key
+      @entity       = entity
       @model_object = model_object
+      @type         = active_model_type.type.to_s.capitalize
     end
 
     def build
@@ -18,21 +18,11 @@ module SeedBuilder
       elsif paperclip?
         @model_object[@key] = "paper clip data"
       else
-
-      # NOTE: type が下の場合は、validation を考慮する。それ以外は validation を無視。
-      need_valid_models = %w( String Text Integer BigInteger Decimal )
-
-      case @type.class.name.demodulize
-      when *need_valid_models
+        # NOTE: いったん、わかりやすさのため tmp var 使う
         data = ValidData.new(
-                          type:         @type,
-                          model_object: @model_object,
-                          key:          @key
-                          ).generate
-      else
-        data = @type.generate
-      end
-
+                    type:         @type,
+                    model_object: @model_object,
+                    key:          @key).generate
         @model_object[@key] = data
       end
     end

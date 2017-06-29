@@ -16,11 +16,13 @@ module SeedBuilder
       end
     end
 
+    private
+
     # @return [Symbol] :string or :integer
     def obj_type
       string_type  = %w( String Text )
       integer_type = %w( Integer BigInteger Decimal )
-      case @type.class.name.demodulize
+      case @type
       when *string_type
         :string
       when *integer_type
