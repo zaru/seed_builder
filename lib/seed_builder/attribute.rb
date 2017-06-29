@@ -4,10 +4,10 @@ module SeedBuilder
     attr_reader :key, :type, :validates, :entity
 
     def initialize key, active_model_type, entity, model_object
-      @key = key
-      @type = Object.const_get("SeedBuilder::Type::#{active_model_type.type.to_s.capitalize}").new active_model_type
-      @entity = entity
+      @key          = key
+      @entity       = entity
       @model_object = model_object
+      @type         = active_model_type.type.to_s.capitalize
     end
 
     def build
@@ -18,31 +18,16 @@ module SeedBuilder
       elsif paperclip?
         @model_object[@key] = "paper clip data"
       else
-        data = @type.generate
-        validates.each do |validate|
-          # TODO: ここの引数増えちゃった問題
-          data = validate.call(data: data, entity: @entity)
-        end
+        # NOTE: いったん、わかりやすさのため tmp var 使う
+        data = ValidData.new(
+                    type:         @type,
+                    model_object: @model_object,
+                    key:          @key).generate
         @model_object[@key] = data
       end
     end
 
     private
-
-    def validates
-      validators = @model_object._validators[@key.to_sym]
-      instances = []
-      validators.each do |v|
-        # ex) v.class.to_s
-        #     => "ActiveRecord::Validations::LengthValidator"
-        class_name = v.class.name.demodulize
-        options    = v.options
-        instances << "SeedBuilder::Validate::#{class_name}"
-                          .constantize.new(options)
-      end
-      instances
-    end
-
 
     def carrier_wave?
       @entity.new.send(@key).is_a? CarrierWave::Uploader::Base
