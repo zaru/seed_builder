@@ -18,11 +18,29 @@ module SeedBuilder
       elsif paperclip?
         @model_object[@key] = "paper clip data"
       else
-        data = @type.generate
-        validates.each do |validate|
-          # TODO: ここの引数増えちゃった問題
-          data = validate.call(data: data, entity: @entity)
+
+
+        case @type
+        when :string, :text, :integer, :big_integer, :decimal
+          data = ValidData.new(@type, @model_object, @key).generate
+        else
+          data = @type.generate
         end
+
+        # case @type
+        # when :string, :text
+        #   # somthing
+        #   data = ValidateGod.new(@type, @model_object, @key).call
+        # when :integer, :big_integer, :decimal
+        #   # somthing
+        #   data = ValidateGod.new(@type, @model_object, @key).call
+        # end
+        #
+        # validates.each do |validate|
+        #   # TODO: ここの引数増えちゃった問題
+        #   data = validate.call(data: data, entity: @entity)
+        # end
+
         @model_object[@key] = data
       end
     end
