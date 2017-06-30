@@ -2,7 +2,7 @@ module SeedBuilder
   module Type
     class Datetime < Base
 
-      def initialize active_model_type
+      def initialize
       end
 
       def generate
