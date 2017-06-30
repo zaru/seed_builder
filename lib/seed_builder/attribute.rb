@@ -7,7 +7,7 @@ module SeedBuilder
       @key          = key
       @entity       = entity
       @model_object = model_object
-      @type         = active_model_type.type.to_s.capitalize
+      @type_name    = active_model_type.type.to_s.capitalize
     end
 
     def build
@@ -20,7 +20,7 @@ module SeedBuilder
       else
         # NOTE: いったん、わかりやすさのため tmp var 使う
         data = ValidData.new(
-                    type:         @type,
+                    type_name:    @type_name,
                     model_object: @model_object,
                     key:          @key).generate
         @model_object[@key] = data
