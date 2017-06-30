@@ -1,5 +1,9 @@
+require 'seed_builder/valid_string'
+require 'seed_builder/valid_integer'
+
 module SeedBuilder
   class ValidData
+
 
     def initialize type_name:, model_object:, key:
       @model_object = model_object
@@ -7,65 +11,26 @@ module SeedBuilder
       @type_name = type_name
       # ex) name, email...
       @key = key
+
+      @valid_type = valid_type
     end
 
     def generate
-      case obj_type
-      when :string
-        ValidString.new(model_object: @model_object, key: @key).generate
-      when :integer
-        ValidInteger.new(model_object: @model_object, key: @key).generate
-      else
-        @type = "SeedBuilder::Type::#{@type_name}".constantize.new
-        @type.generate
-      end
+      @valid_type.generate
     end
-
-
-    class ValidString
-      def initialize model_object:, key:
-        @model_object = model_object
-        @key = key
-        validates
-      end
-      def generate
-        ("a".."z").to_a.sample(30).join
-      end
-
-      private
-
-      def validates
-        validators = @model_object._validators[@key.to_sym]
-        validator_names = validators.map{|m| m.class.name.demodulize}
-
-        case validator_names
-        when include_format?
-          # TODO: Regex の拡張を作る予定
-        when include_length?
-          # TODO: Length この辺ごにょごにょしないといけない
-        else
-          # 何もしない
-        end
-      end
-
-      def include_format?
-        ->(arr){ arr.include? "FromatValidata" }
-      end
-      def include_length?
-        ->(arr){ arr.include? "LengthValidator" }
-      end
-    end
-
-    class ValidInteger
-      def initialize model_object:, key:
-      end
-      def generate
-        rand(9999)
-      end
-    end
-
 
     private
+
+    def valid_type
+      case obj_type
+      when :string
+        return ValidString.new(model_object: @model_object, key: @key)
+      when :integer
+        return ValidInteger.new(model_object: @model_object, key: @key)
+      else
+        return @type = "SeedBuilder::Type::#{@type_name}".constantize.new
+      end
+    end
 
     # @return [Symbol] :string or :integer
     def obj_type
