@@ -6,21 +6,6 @@ class ValidString
   end
 
   def generate
-    validates
-    # ("a".."z").to_a.sample(30).join
-  end
-
-  private
-
-  def validators
-    @model_object._validators[@key.to_sym]
-  end
-
-  def length_validators
-    validators.select{|m| m.class.name.demodulize == "LengthValidator"}
-  end
-
-  def validates
     validator_names = validators.map{|m| m.class.name.demodulize}
 
     case validator_names
@@ -43,6 +28,17 @@ class ValidString
   end
 
 
+  private
+
+  def validators
+    @model_object._validators[@key.to_sym]
+  end
+
+  def length_validators
+    validators.select{|m| m.class.name.demodulize == "LengthValidator"}
+  end
+
+
   # @return [Integer] 文字数
   def num_of_chars
     # ex) {:minimum=>5, :maximum=>9}
@@ -52,7 +48,6 @@ class ValidString
     maximum = merged_options[:maximum] || 16
     rand(minimum..maximum)
   end
-
 
 
   def include_format?
