@@ -1,7 +1,7 @@
 module SeedBuilder
   module Type
     class Boolean < Base
-      def value
+      def generate
         [true, false].sample
       end
     end
