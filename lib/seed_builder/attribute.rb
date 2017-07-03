@@ -15,6 +15,10 @@ module SeedBuilder
         return @model_object[@key] = nil
       end
 
+      if sti_type?
+        return @model_object[@key] = @entity.name
+      end
+
       if foreign_key?
         # MEMO: すでに親クラスにデータがぞんざいしている前提なので単体だとnilが入る
         # もしかしたら後からの救済メソッドを作っても良いのかもしれない。
