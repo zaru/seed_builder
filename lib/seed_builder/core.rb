@@ -1,6 +1,8 @@
 module SeedBuilder
   class Core
 
+    # 各モデルで生成するレコード数
+    # TODO: ここの値を外から調整できるようにする
     BUILD_NUM = 1
 
     def initialize
@@ -16,6 +18,12 @@ module SeedBuilder
     private
 
     # 処理すべき順番にEntityを並び替える
+    #
+    # どのモデルも参照していないモデルからデータを生成する。
+    # そうすることで参照しているモデルのデータ生成時には、参照先モデルのデータが存在する。
+    # また、アソシエーションが何もないモデルは後から追加する。
+    #
+    # @return [Array<ActiveRecord::Base>]
     def ordered_entities
       entities = []
       @domain.relationships.each do |rel|
