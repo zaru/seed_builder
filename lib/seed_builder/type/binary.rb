@@ -1,7 +1,7 @@
 module SeedBuilder
   module Type
     class Binary < Base
-      def value
+      def generate
         ""
       end
     end

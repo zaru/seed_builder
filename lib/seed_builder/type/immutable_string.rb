@@ -1,7 +1,7 @@
 module SeedBuilder
   module Type
     class ImmutableString < Base
-      def value
+      def generate
         "immutable string".freeze
       end
     end

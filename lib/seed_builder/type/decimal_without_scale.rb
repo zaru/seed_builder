@@ -1,7 +1,7 @@
 module SeedBuilder
   module Type
     class DecimalWithoutScale < Base
-      def value
+      def generate
         max = 100
         min = 1
         rand * (max-min) + min
