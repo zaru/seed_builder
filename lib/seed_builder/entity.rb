@@ -25,7 +25,13 @@ module SeedBuilder
 
     # polymorphic関連を除いた指定モデルの外部キーリストを生成する
     def foreign_keys
-      reflect_on_all_associations.select{|ref| !ref.options[:polymorphic] }.map{|ref| { foreign_key: ref.foreign_key, klass: ref.klass } }
+      reflect_on_all_associations.select{|ref| !ref.options[:polymorphic] }.map{|ref|
+        foreign_key = ref.foreign_key
+        if "left_side_id" == ref.foreign_key
+          foreign_key = ref.klass.reflect_on_all_associations.first.foreign_key
+        end
+        {foreign_key: foreign_key, klass: ref.klass }
+      }
     end
 
     # TODO: 見直し対象
