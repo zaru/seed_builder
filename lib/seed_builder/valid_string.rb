@@ -45,7 +45,7 @@ class ValidString
 
   def length_validators
     validators.select{ |m|
-        m.class.name.demodulize == "LengthValidator"
+      m.class.name.demodulize == "LengthValidator"
     }
   end
 
