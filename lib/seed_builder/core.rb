@@ -19,10 +19,10 @@ module SeedBuilder
     def ordered_entities
       entities = []
       @domain.relationships.each do |rel|
+        next if entities.include? rel[:src]
         next unless @domain.relationships.select{|r| rel[:src].name == r[:dst].name}.size.zero?
-        @domain.relationships.delete_if{|r| rel[:src].name == r[:src].name}
-        @domain.entities.delete_if{|r| rel[:src].name == r.name}
         entities << rel[:src]
+        @domain.entities.delete_if{|r| rel[:src].name == r.name}
       end
       entities.concat @domain.entities
     end

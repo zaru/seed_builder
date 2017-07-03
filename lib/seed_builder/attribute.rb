@@ -11,20 +11,34 @@ module SeedBuilder
     end
 
     def build
-      # TODO: ここに外部キーに関する処理分岐を入れる
+      if auto_generate?
+        return @model_object[@key] = nil
+      end
+
+      if sti_type?
+        return @model_object[@key] = @entity.name
+      end
+
+      if foreign_key?
+        # MEMO: すでに親クラスにデータがぞんざいしている前提なので単体だとnilが入る
+        # もしかしたら後からの救済メソッドを作っても良いのかもしれない。
+        return @model_object[@key] = foreign_klass.all.sample.id
+      end
 
       if carrier_wave?
-        Upload::CarrierWave.new(@model_object, @key)
-      elsif paperclip?
-        @model_object[@key] = "paper clip data"
-      else
-        # NOTE: いったん、わかりやすさのため tmp var 使う
-        data = ValidData.new(
-                    type_name:    @type_name,
-                    model_object: @model_object,
-                    key:          @key).generate
-        @model_object[@key] = data
+        return Upload::CarrierWave.new(@model_object, @key)
       end
+
+      if paperclip?
+        return @model_object[@key] = "paper clip data"
+      end
+
+      # NOTE: いったん、わかりやすさのため tmp var 使う
+      data = ValidData.new(
+                  type_name:    @type_name,
+                  model_object: @model_object,
+                  key:          @key).generate
+      @model_object[@key] = data
     end
 
     private

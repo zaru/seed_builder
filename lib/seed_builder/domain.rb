@@ -18,7 +18,10 @@ module SeedBuilder
           !ref.is_a?(ActiveRecord::Reflection::ThroughReflection)
       end.map do |ref|
         if ref.is_a? ActiveRecord::Reflection::HasAndBelongsToManyReflection
-          relation_name = "#{ref.klass.name}::HABTM_#{ref.active_record.name.pluralize}"
+          # has_and_belongs_to_manyの場合、1つの中間モデルが2つのモデルになってしまうので、片方に寄せる
+          first, last = ref.klass.name > ref.active_record.name.pluralize ?
+            [ref.klass.name, ref.active_record.name.pluralize] : [ref.active_record.name.pluralize, ref.klass.name]
+          relation_name = "#{first.singularize}::HABTM_#{last.pluralize}"
           klass = Object.const_get relation_name
         else
           klass = ref.klass
@@ -31,7 +34,7 @@ module SeedBuilder
 
     # テーブルを所持していて、STI継承元ではないモデルのみを返す
     def models
-      @models ||= ActiveRecord::Base.descendants.select{|model| available_model(model) } - superclasses
+      @models ||= ActiveRecord::Base.descendants.select{|model| available_model(model) }.map{|model| integrate_habtm_name(model) }.uniq - superclasses
     end
 
     def associations
@@ -62,6 +65,13 @@ module SeedBuilder
 
     def superclasses
       ActiveRecord::Base.descendants.map{|model| model.superclass }.uniq - [ActiveRecord::Base]
+    end
+
+    # HABTMの中間モデルが複数になってしまうので片方に寄せる
+    def integrate_habtm_name model
+      return model unless names = model.to_s.match(/\A(.+)::HABTM_(.+)\z/)
+      first, last = names[1] > names[2] ? [names[1], names[2]] : [names[2], names[1]]
+      Object.const_get "#{first.singularize}::HABTM_#{last.pluralize}"
     end
   end
 end
