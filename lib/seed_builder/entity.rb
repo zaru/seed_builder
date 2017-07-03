@@ -12,7 +12,6 @@ module SeedBuilder
       entity.attribute_collection.each do |attribute|
         attribute.build
       end
-      entity
 
       # MEMO: ポリモーフィックは2つのフィールドでリレーションされるためここで上書き保存している
       polymorphic_columns.each do |column|
@@ -21,6 +20,7 @@ module SeedBuilder
         entity[column[:foreign_key]] = belongs_to.active_record.all.sample.id
       end
 
+      entity.save
     end
 
     # polymorphic関連を除いた指定モデルの外部キーリストを生成する
