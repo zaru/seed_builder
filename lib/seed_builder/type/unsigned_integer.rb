@@ -1,7 +1,7 @@
 module SeedBuilder
   module Type
     class Boolean < Base
-      def value
+      def generate
         rand(1000) + 1
       end
     end
