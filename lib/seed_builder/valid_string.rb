@@ -1,4 +1,5 @@
 require 'faker'
+require 'seed_builder/customized_faker'
 
 class ValidString
 
@@ -36,7 +37,7 @@ class ValidString
     # NOTE: 複数の FormatValidator が存在しうるが、それを考慮するのは、
     # 大変すぎる気がするので、一番最後のものだけを反映させてます。ひとまず..
     regex = format_validators.map{|m| m.options[:with]}.last
-    Faker::Base.regexify(regex)
+    CustomizedFaker::Base.regexify(regex)
   end
 
   def validators
