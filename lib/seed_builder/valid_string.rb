@@ -1,3 +1,5 @@
+require 'faker'
+
 class ValidString
 
   def initialize model_object:, key:
@@ -12,7 +14,7 @@ class ValidString
 
     # Regex だけを考える
     when include_format?
-      return "regex"
+      return formatted_str
 
     # Integer を返す
     when include_numericality?
@@ -30,14 +32,28 @@ class ValidString
 
   private
 
+  def formatted_str
+    # NOTE: 複数の FormatValidator が存在しうるが、それを考慮するのは、
+    # 大変すぎる気がするので、一番最後のものだけを反映させてます。ひとまず..
+    regex = format_validators.map{|m| m.options[:with]}.last
+    Faker::Base.regexify(regex)
+  end
+
   def validators
     @model_object._validators[@key.to_sym]
   end
 
   def length_validators
-    validators.select{|m| m.class.name.demodulize == "LengthValidator"}
+    validators.select{ |m|
+      m.class.name.demodulize == "LengthValidator"
+    }
   end
 
+  def format_validators
+    validators.select{ |m|
+      m.class.name.demodulize == "FormatValidator"
+    }
+  end
 
   # @return [Integer] 文字数
   def num_of_chars
