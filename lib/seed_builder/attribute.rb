@@ -22,7 +22,7 @@ module SeedBuilder
       if foreign_key?
         # MEMO: すでに親クラスにデータがぞんざいしている前提なので単体だとnilが入る
         # もしかしたら後からの救済メソッドを作っても良いのかもしれない。
-        return @model_object[@key] = foreign_klass.all.sample
+        return @model_object[@key] = foreign_klass.all.sample.id
       end
 
       if carrier_wave?
