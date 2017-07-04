@@ -85,16 +85,9 @@ module SeedBuilder
       "type" == @key && @entity.superclass != ActiveRecord::Base
     end
 
+    # ポリモーフィックで使われている外部キー判定
     def polymorphic_foreign_key?
       @entity.polymorphic_columns.find{|c| @key == c[:foreign_key] } ? true : false
-    end
-
-    def unique_index?
-      ActiveRecord::Base.connection.indexes(@entity.table_name).select{|i| i.columns.include?(@key) && i.unique}.size.zero? ? false : true
-    end
-
-    def unique?
-      @entity.validators.select{|v| v.attributes.include?(@key.to_sym) && v.is_a?(ActiveRecord::Validations::UniquenessValidator) }.size.zero? ? false : true
     end
   end
 end
