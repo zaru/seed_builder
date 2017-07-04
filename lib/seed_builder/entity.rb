@@ -7,13 +7,22 @@ module SeedBuilder
 
     @@attributes = {}
 
+    # 対象モデルのデータを生成して保存する
     def create
       entity = new
       entity.attribute_collection.each do |attribute|
         attribute.build
       end
 
-      # MEMO: ポリモーフィックは2つのフィールドでリレーションされるためここで上書き保存している
+      # ポリモーフィックは2つのフィールドでリレーションされるためここで上書き保存している
+      #
+      # 例
+      #   Messageモデルがポリモーフィックの場合
+      #     - messagable_type: <リレーション先モデル名>
+      #     - messagable_id: <リレーション先モデルID>
+      #   上記2つの組み合わせによってリレーション先が決まる。
+      #
+      # TODO: このロジックをメソッドに抽出したい
       polymorphic_columns.each do |column|
         belongs_to = polymorphic_belongs.sample
         entity[column[:type] + "_type"] = belongs_to.active_record.name
@@ -24,6 +33,12 @@ module SeedBuilder
     end
 
     # polymorphic関連を除いた指定モデルの外部キーリストを生成する
+    #
+    # {
+    #   foreign_key: 外部キー名
+    #   klass: 外部キークラス
+    # }
+    #
     def foreign_keys
       reflect_on_all_associations.select{|ref| !ref.options[:polymorphic] }.map{|ref|
         foreign_key = ref.foreign_key
@@ -35,6 +50,7 @@ module SeedBuilder
     end
 
     # TODO: 見直し対象
+    # polymorphicの外部キーとモデルリストを返す
     def polymorphic_columns
       return @polymorphic_columns unless @polymorphic_columns.nil?
       @polymorphic_columns = []
@@ -46,6 +62,7 @@ module SeedBuilder
     end
 
     # TODO: 見直し対象
+    # polymorphicの外部キーを返す
     def polymorphic_foreign_key models, polymorphic_type
       models.map do |model|
         model.reflect_on_all_associations.each do |ref|
@@ -62,6 +79,8 @@ module SeedBuilder
     end
 
     # ポリモーフィックの参照先（親）のリレーション情報配列を返す
+    # ポリモーフィックモデル自身から参照先を割り出すことができないので、
+    # 全モデルから参照しているかどうかを取りに行く（ちょっと非効率）。
     def polymorphic_belongs
       entities = Domain.new.entities
       entities.map{|e| e.reflect_on_all_associations}.flatten.select{|ref| ref.options[:as] && name == ref.class_name }
@@ -72,6 +91,8 @@ module SeedBuilder
   # モデルオブジェクトのアトリビューション自身でデータをセットできるようにする
   module EntityObject
 
+    # Usage:
+    #   HogeModel.new.attribute_collection
     def attribute_collection
       @attribute_collection ||= AttributeCollection.new(
         self.class.attribute_types.map do |key, active_model_type|
@@ -81,6 +102,8 @@ module SeedBuilder
     end
 
     # アトリビューション名で直接オブジェクトを参照できるようにする
+    # Usage:
+    #   HogeModel.new.attribute_collection.key_name
     class AttributeCollection < Array
       def method_missing(method, *args)
         self.find{|attr| method.to_s == attr.key}
