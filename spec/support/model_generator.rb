@@ -3,7 +3,14 @@ module ModelGenerator
     model = Model.new
     model.name = model_name
     model.instance_eval &block
-    model.generate
+    model.generate_all
+  end
+
+  def self.create_table table_name, &block
+    model = Model.new
+    model.name = table_name
+    model.instance_eval &block
+    model.generate_table
   end
 
   # 定義したモデルクラスやテーブル構造をすべてリセットする
@@ -89,23 +96,28 @@ module ModelGenerator
       @columns << attr
     end
 
-    def belongs_to model
-      @associations << { type: :belongs_to, model: model }
+    def belongs_to model, *options
+      @associations << { type: :belongs_to, model: model, options: options }
     end
 
-    def has_many model
-      @associations << { type: :has_many, model: model }
+    def has_many model, *options
+      @associations << { type: :has_many, model: model, options: options }
     end
 
-    def has_one model
-      @associations << { type: :has_one, model: model }
+    def has_one model, *options
+      @associations << { type: :has_one, model: model, options: options }
     end
 
-    def has_and_belongs_to_many model
-      @associations << { type: :has_and_belongs_to_many, model: model }
+    def has_and_belongs_to_many model, *options
+      @associations << { type: :has_and_belongs_to_many, model: model, options: options }
     end
 
-    def generate
+    def generate_all
+      generate_table
+      generate_model
+    end
+
+    def generate_table
       name = @name
       columns = @columns
       ActiveRecord::Schema.instance_eval do
@@ -119,10 +131,17 @@ module ModelGenerator
           end
         end
       end
-      class_name = name.to_s.classify
+    end
+
+    def generate_model
+      class_name = @name.to_s.classify
       Object.const_set class_name, Class.new(ActiveRecord::Base)
       @associations.each do |assoc|
-        Object.const_get(class_name).send assoc[:type], assoc[:model]
+        if assoc[:options].size.zero?
+          Object.const_get(class_name).send assoc[:type], assoc[:model]
+        else
+          Object.const_get(class_name).send assoc[:type], assoc[:model], *assoc[:options]
+        end
       end
     end
   end
