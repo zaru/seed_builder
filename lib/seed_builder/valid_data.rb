@@ -1,5 +1,7 @@
-require 'seed_builder/valid_string'
-require 'seed_builder/valid_integer'
+require 'faker'
+require 'seed_builder/customized_faker'
+require 'seed_builder/valid/string'
+require 'seed_builder/valid/integer'
 
 module SeedBuilder
   class ValidData
@@ -24,9 +26,9 @@ module SeedBuilder
     def valid_type
       case obj_type
       when :string
-        return ValidString.new(model_object: @model_object, key: @key)
+        return Valid::String.new model_object: @model_object, key: @key
       when :integer
-        return ValidInteger.new(model_object: @model_object, key: @key)
+        return Valid::Integer.new model_object: @model_object, key: @key
       else
         return @type = "SeedBuilder::Type::#{@type_name}".constantize.new
       end
