@@ -25,8 +25,13 @@ module SeedBuilder
       # TODO: このロジックをメソッドに抽出したい
       polymorphic_columns.each do |column|
         belongs_to = polymorphic_belongs.sample
-        entity[column[:type] + "_type"] = belongs_to.active_record.name
-        entity[column[:foreign_key]] = belongs_to.active_record.all.sample.id
+        if belongs_to
+          entity[column[:type] + "_type"] = belongs_to&.active_record.name
+          entity[column[:foreign_key]]    = belongs_to.active_record.all.sample.id
+        else
+          entity[column[:type] + "_type"] = nil
+          entity[column[:foreign_key]]    = nil
+        end
       end
 
       entity.save
