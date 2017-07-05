@@ -43,14 +43,18 @@ module SeedBuilder
 
     private
 
+    # CarrierWaveかどうか判定
+    # 一度モデルをインスタンスにしないと判定できない
     def carrier_wave?
       @entity.new.send(@key).is_a? CarrierWave::Uploader::Base
     end
 
+    # TODO: paperclip対応
     def paperclip?
       false
     end
 
+    # 外部キー判定
     def foreign_key?
       # ポリモーフィックの外部キーはこの時点でリレーション先のモデルを確定できないので、普通のフィールドとして扱う
       return false if polymorphic_foreign_key?
@@ -59,6 +63,7 @@ module SeedBuilder
       false
     end
 
+    # 外部クラス
     def foreign_klass
       return nil if polymorphic_foreign_key?
 
@@ -69,25 +74,20 @@ module SeedBuilder
       # TODO: left_side_id の対応
     end
 
+    # サロゲートキー判定
     def auto_generate?
       # TODO: Rails規約どおりの場合のみ想定しているのでカスタムに対応する
       "id" == @key
     end
 
+    # STI用のTypeフィールドかどうかの判定
     def sti_type?
       "type" == @key && @entity.superclass != ActiveRecord::Base
     end
 
+    # ポリモーフィックで使われている外部キー判定
     def polymorphic_foreign_key?
       @entity.polymorphic_columns.find{|c| @key == c[:foreign_key] } ? true : false
-    end
-
-    def unique_index?
-      ActiveRecord::Base.connection.indexes(@entity.table_name).select{|i| i.columns.include?(@key) && i.unique}.size.zero? ? false : true
-    end
-
-    def unique?
-      @entity.validators.select{|v| v.attributes.include?(@key.to_sym) && v.is_a?(ActiveRecord::Validations::UniquenessValidator) }.size.zero? ? false : true
     end
   end
 end
