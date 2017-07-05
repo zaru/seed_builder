@@ -73,16 +73,41 @@ module ModelGenerator
   end
 
 
-  # [WIP] モデルとテーブルを動的に生成するDSL
-  # 細かいオプションに対応するのが面倒なので、もっと簡素なDSL構造にする予定
+  # モデルとテーブルを動的に生成するDSL
   #
   # Usage:
-  #   ModelGenerator::create_model(:users) do |model|
-  #     model.columns :string, :name, null: false
-  #     model.has_many :articles
+  #
+  #   ModelGenerator::create_model(:books) do
+  #     string :name, null: false
+  #   end
+  #
+  #   ModelGenerator::create_model(:movies) do
+  #     string :name, null: false
+  #
+  #     has_many :messages, as: :messagable
+  #   end
+  #
+  #   ModelGenerator::create_model(:reviews) do
+  #     string :comment, null: false
+  #     references :messagable, polymorphic: true
+  #
+  #     belongs_to :messagable, polymorphic: true
   #   end
   #
   class Model
+
+    %w(string text integer float decimal datetime timestamp time date binary boolean references).each do |type|
+      define_method type do |*attr|
+        @columns << ([type].concat attr)
+      end
+    end
+
+    %w(belongs_to has_many has_one has_and_belongs_to_many).each do |assoc|
+      define_method assoc do |model, *options|
+        @associations << { type: assoc.to_sym, model: model, options: options }
+      end
+    end
+
     def initialize
       @columns = []
       @associations = []
@@ -90,26 +115,6 @@ module ModelGenerator
 
     def name= name
       @name = name
-    end
-
-    def columns *attr
-      @columns << attr
-    end
-
-    def belongs_to model, *options
-      @associations << { type: :belongs_to, model: model, options: options }
-    end
-
-    def has_many model, *options
-      @associations << { type: :has_many, model: model, options: options }
-    end
-
-    def has_one model, *options
-      @associations << { type: :has_one, model: model, options: options }
-    end
-
-    def has_and_belongs_to_many model, *options
-      @associations << { type: :has_and_belongs_to_many, model: model, options: options }
     end
 
     def generate_all
