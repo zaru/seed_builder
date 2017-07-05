@@ -25,14 +25,26 @@ module SeedBuilder
     #
     # @return [Array<ActiveRecord::Base>]
     def ordered_entities
-      entities = []
-      @domain.relationships.each do |rel|
-        next if entities.include? rel[:src]
-        next unless @domain.relationships.select{|r| rel[:src].name == r[:dst].name}.size.zero?
-        entities << rel[:src]
-        @domain.entities.delete_if{|r| rel[:src].name == r.name}
-      end
+      entities = ordered_entities_from_relationships
+      @domain.entities.delete_if{ |r| entities.map(&:name).include?(r.name) }
       entities.concat @domain.entities
+    end
+
+    # entities に親モデルから次々に要素をいれていく
+    # @return [Array<Entity>]
+    def ordered_entities_from_relationships
+      rels = @domain.relationships.dup # 全リレーション
+      entities = []
+      while rels.count > 0
+        rels.dup.each do |rel|
+          src = rel[:src]
+          if rels.select{ |r| r[:dst].name == src.name }.size.zero?
+            entities << src
+            rels.reject!{ |r| r[:src].name == src.name }
+          end
+        end
+      end
+      entities.uniq
     end
 
   end
