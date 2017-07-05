@@ -40,21 +40,9 @@ module SeedBuilder
       @polymorphic_columns = []
       entities = Domain.new.entities
       polymorphic_associations.each do |ref|
-        @polymorphic_columns << { type: ref.name.to_s, foreign_key: polymorphic_foreign_key(entities, ref.name) }
+        @polymorphic_columns << { type: ref.name.to_s, foreign_key: ref.foreign_key }
       end
       @polymorphic_columns
-    end
-
-    # TODO: 見直し対象
-    def polymorphic_foreign_key models, polymorphic_type
-      models.map do |model|
-        model.reflect_on_all_associations.each do |ref|
-          if ref.options[:as] == polymorphic_type
-            # 指定タイプの外部キーが見つかったらその時点で返す（他のを走査しても同じ為）
-            return ref.foreign_key
-          end
-        end
-      end
     end
 
     def polymorphic_associations
