@@ -30,7 +30,7 @@ module SeedBuilder
       entities.concat @domain.entities
     end
 
-    # @ordered_entities に次々に要素をいれていく
+    # entities に親モデルから次々に要素をいれていく
     # @return [Array<Entity>]
     def ordered_entities_from_relationships
       rels = @domain.relationships.dup # 全リレーション
