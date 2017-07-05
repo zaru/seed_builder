@@ -26,7 +26,7 @@ module SeedBuilder
     # @return [Array<ActiveRecord::Base>]
     def ordered_entities
       entities = ordered_entities_from_relationships
-      @domain.entities.delete_if{|r| entities.map(&:name).include?(r.name)}
+      @domain.entities.delete_if{ |r| entities.map(&:name).include?(r.name) }
       entities.concat @domain.entities
     end
 
@@ -38,9 +38,9 @@ module SeedBuilder
       while rels.count > 0
         rels.each do |rel|
           src = rel[:src]
-          if rels.select{|r| r[:dst].name == src.name }.size.zero?
+          if rels.select{ |r| r[:dst].name == src.name }.size.zero?
             entities << src
-            rels.reject!{|r| r[:src].name == src.name }
+            rels.reject!{ |r| r[:src].name == src.name }
           end
         end
       end
