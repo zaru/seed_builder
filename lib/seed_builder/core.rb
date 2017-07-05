@@ -36,7 +36,7 @@ module SeedBuilder
       rels = @domain.relationships.dup # 全リレーション
       entities = []
       while rels.count > 0
-        rels.each do |rel|
+        rels.dup.each do |rel|
           src = rel[:src]
           if rels.select{ |r| r[:dst].name == src.name }.size.zero?
             entities << src
@@ -44,7 +44,7 @@ module SeedBuilder
           end
         end
       end
-      entities
+      entities.uniq
     end
 
   end

@@ -26,7 +26,7 @@ module SeedBuilder
       polymorphic_columns.each do |column|
         belongs_to = polymorphic_belongs.sample
         if belongs_to
-          entity[column[:type] + "_type"] = belongs_to&.active_record.name
+          entity[column[:type] + "_type"] = belongs_to.active_record.name
           entity[column[:foreign_key]]    = belongs_to.active_record.all.sample.id
         else
           entity[column[:type] + "_type"] = nil
