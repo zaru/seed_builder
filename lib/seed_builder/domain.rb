@@ -101,7 +101,7 @@ module SeedBuilder
       # names.delete_at 0
       # first, last = names.sort
 
-      first, last = names[1] > names[2] ? [names[1], names[2]] : [names[2], names[1]]
+      first, last = names[1] < names[2] ? [names[1], names[2]] : [names[2], names[1]]
       Object.const_get "#{first.singularize}::HABTM_#{last.pluralize}"
     end
   end
