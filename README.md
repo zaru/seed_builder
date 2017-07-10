@@ -1,5 +1,9 @@
 # SeedBuilder
 
+[![Code Climate](https://codeclimate.com/github/zaru/seed_builder/badges/gpa.svg)](https://codeclimate.com/github/zaru/seed_builder)
+[![Build Status](https://travis-ci.org/zaru/seed_builder.svg?branch=master)](https://travis-ci.org/zaru/seed_builder)
+[![Gem Version](https://badge.fury.io/rb/seed_builder.svg)](https://badge.fury.io/rb/seed_builder)
+
 **Work in Progress** 🙏
 
 This gem will automatically generate seeds.
