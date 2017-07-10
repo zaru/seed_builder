@@ -1,5 +1,9 @@
-sudo: false
 language: ruby
 rvm:
+  - 2.3.0
   - 2.4.0
 before_install: gem install bundler -v 1.14.3
+script: "bundle exec rake spec"
+addons:
+  code_climate:
+    repo_token: 48e7d270a842d6bc1ffdfbf12a3d70854106dbdbdb52ac4d26158ab41a34dfb8
