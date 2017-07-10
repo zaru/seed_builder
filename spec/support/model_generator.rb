@@ -1,11 +1,70 @@
+# Generate Model and Table DSL
+#
+# You can define model classes and generate physical tables
+# at the same time.
+#
+# This DSL is intended to simplify the test code and does not
+# assume the production environment.
+#
+# Usage:
+#
+#   ModelGenerator::create_model(:books) do
+#     string :name, null: false
+#     integer :number, unique: true
+#   end
+#
+#
+#   Associations example.
+#
+#   ModelGenerator::create_model(:movies) do
+#     string :name, null: false
+#
+#     has_many :messages
+#   end
+#
+#
+#   Polymorphic model example.
+#
+#   ModelGenerator::create_model(:movies) do
+#     string :name, null: false
+#
+#     has_many :messages, as: :messagable
+#   end
+#
+#   ModelGenerator::create_model(:reviews) do
+#     string :comment, null: false
+#     references :messagable, polymorphic: true
+#
+#     belongs_to :messagable, polymorphic: true
+#   end
+#
+#
+#   STI model example.
+#
+#   ModelGenerator::create_model(:books) do
+#     string :type, null: false
+#   end
+#
+#   ModelGenerator::create_model(:game_books, :books) do
+#   end
+#
+#   ModelGenerator::create_model(:music_books, :books) do
+#   end
 module ModelGenerator
-  def self.create_model model_name, &block
+
+  # @param [Symbol] model_name
+  # @param [Symbol] inherit_model_name
+  # @param [Object] block
+  def self.create_model model_name, inherit_model_name = nil, &block
     model = Model.new
     model.name = model_name
+    model.inherit_name = inherit_model_name
     model.instance_eval &block
     model.generate_all
   end
 
+  # @param [Symbol] table_name
+  # @param [Object] block
   def self.create_table table_name, &block
     model = Model.new
     model.name = table_name
@@ -13,7 +72,7 @@ module ModelGenerator
     model.generate_table
   end
 
-  # 定義したモデルクラスやテーブル構造をすべてリセットする
+  # All reset to current Model and Table
   #
   # Usage:
   #  ModelGenerator::Reset.new.all
@@ -38,7 +97,7 @@ module ModelGenerator
 
     private
 
-    # voormedia/rails-erd より拝借
+    # ref: voormedia/rails-erd
     def name_to_object_symbol_pairs(name)
       parts = name.to_s.split('::')
 
@@ -73,27 +132,6 @@ module ModelGenerator
   end
 
 
-  # モデルとテーブルを動的に生成するDSL
-  #
-  # Usage:
-  #
-  #   ModelGenerator::create_model(:books) do
-  #     string :name, null: false
-  #   end
-  #
-  #   ModelGenerator::create_model(:movies) do
-  #     string :name, null: false
-  #
-  #     has_many :messages, as: :messagable
-  #   end
-  #
-  #   ModelGenerator::create_model(:reviews) do
-  #     string :comment, null: false
-  #     references :messagable, polymorphic: true
-  #
-  #     belongs_to :messagable, polymorphic: true
-  #   end
-  #
   class Model
 
     %w(string text integer float decimal datetime timestamp time date binary boolean references).each do |type|
@@ -115,6 +153,10 @@ module ModelGenerator
 
     def name= name
       @name = name
+    end
+
+    def inherit_name= name
+      @inherit_name = name
     end
 
     def generate_all
@@ -140,7 +182,11 @@ module ModelGenerator
 
     def generate_model
       class_name = @name.to_s.classify
-      Object.const_set class_name, Class.new(ActiveRecord::Base)
+      if @inherit_name
+        Object.const_set class_name, Class.new(Object.const_get(@inherit_name.to_s.classify))
+      else
+        Object.const_set class_name, Class.new(ActiveRecord::Base)
+      end
       @associations.each do |assoc|
         if assoc[:options].size.zero?
           Object.const_get(class_name).send assoc[:type], assoc[:model]
