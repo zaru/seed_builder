@@ -50,6 +50,20 @@
 #
 #   ModelGenerator::create_model(:music_books, :books) do
 #   end
+#
+#
+#   HABTM model example.
+#
+#   ModelGenerator::create_model(:books) do
+#     has_and_belongs_to_many :users
+#   end
+#   ModelGenerator::create_model(:users) do
+#     has_and_belongs_to_many :books
+#   end
+#   ModelGenerator::create_table(:books_users) do
+#     references :book, index: true, null: false
+#     references :user, index: true, null: false
+#   end
 module ModelGenerator
 
   # @param [Symbol] model_name
