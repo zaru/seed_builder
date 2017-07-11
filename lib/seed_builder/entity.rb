@@ -132,6 +132,11 @@ module SeedBuilder
         self.find{|attr| method.to_s == attr.key}
       end
     end
+
+    def valid_attribute?(attribute_name)
+      self.valid?
+      self.errors[attribute_name].blank?
+    end
   end
 end
 
