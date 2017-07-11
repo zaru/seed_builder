@@ -64,6 +64,14 @@
 #     references :book, index: true, null: false
 #     references :user, index: true, null: false
 #   end
+#
+# 
+#   Validation example.
+#
+#   ModelGenerator::create_model(:users) do
+#     string :name
+#     validates :name, presence: true
+#   end
 module ModelGenerator
 
   # @param [Symbol] model_name
@@ -163,6 +171,7 @@ module ModelGenerator
     def initialize
       @columns = []
       @associations = []
+      @validations = []
     end
 
     def name= name
@@ -171,6 +180,10 @@ module ModelGenerator
 
     def inherit_name= name
       @inherit_name = name
+    end
+
+    def validates *attr
+      @validations << attr
     end
 
     def generate_all
@@ -207,6 +220,9 @@ module ModelGenerator
         else
           Object.const_get(class_name).send assoc[:type], assoc[:model], *assoc[:options]
         end
+      end
+      @validations.each do |assoc|
+        Object.const_get(class_name).send :validates, *assoc
       end
     end
   end
