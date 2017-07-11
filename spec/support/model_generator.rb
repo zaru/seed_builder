@@ -50,6 +50,28 @@
 #
 #   ModelGenerator::create_model(:music_books, :books) do
 #   end
+#
+#
+#   HABTM model example.
+#
+#   ModelGenerator::create_model(:books) do
+#     has_and_belongs_to_many :users
+#   end
+#   ModelGenerator::create_model(:users) do
+#     has_and_belongs_to_many :books
+#   end
+#   ModelGenerator::create_table(:books_users) do
+#     references :book, index: true, null: false
+#     references :user, index: true, null: false
+#   end
+#
+#
+#   Validation example.
+#
+#   ModelGenerator::create_model(:users) do
+#     string :name
+#     validates :name, presence: true
+#   end
 module ModelGenerator
 
   # @param [Symbol] model_name
@@ -149,6 +171,7 @@ module ModelGenerator
     def initialize
       @columns = []
       @associations = []
+      @validations = []
     end
 
     def name= name
@@ -157,6 +180,10 @@ module ModelGenerator
 
     def inherit_name= name
       @inherit_name = name
+    end
+
+    def validates *attr
+      @validations << attr
     end
 
     def generate_all
@@ -193,6 +220,9 @@ module ModelGenerator
         else
           Object.const_get(class_name).send assoc[:type], assoc[:model], *assoc[:options]
         end
+      end
+      @validations.each do |validate|
+        Object.const_get(class_name).send :validates, *validate
       end
     end
   end

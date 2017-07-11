@@ -11,7 +11,7 @@ module SeedBuilder
 
     def processing
       ordered_entities.each do |entity|
-        BUILD_NUM.times{ entity.create }
+        BUILD_NUM.times{ entity.auto_create }
       end
     end
 

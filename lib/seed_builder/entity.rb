@@ -1,4 +1,4 @@
-# このモジュールを require するのは…rakeタスクの中にしたほうが良い気がする。
+# TODO: このモジュールを require するのは…rakeタスクの中にしたほうが良い気がする。
 # そうしないとActiveRecordを常に拡張した状態になってしまう。
 
 module SeedBuilder
@@ -7,8 +7,9 @@ module SeedBuilder
 
     @@attributes = {}
 
+    # TODO: refactor name
     # 対象モデルのデータを生成して保存する
-    def create
+    def auto_create
       entity = new
       entity.attribute_collection.each do |attribute|
         attribute.build
@@ -37,15 +38,18 @@ module SeedBuilder
       entity.save
     end
 
-    # polymorphic関連を除いた指定モデルの外部キーリストを生成する
+    # foreign keys only belongs_to association
+    # and excluding polymorphic
     #
-    # {
-    #   foreign_key: 外部キー名
-    #   klass: 外部キークラス
-    # }
     #
+    # [{
+    #   foreign_key: "key name",
+    #   klass: Klass
+    # }]
+    #
+    # @return [Array<Hash>]
     def foreign_keys
-      reflect_on_all_associations.select{|ref| !ref.options[:polymorphic] }.map{|ref|
+      reflect_on_all_associations.select{|ref| foreign_association(ref) }.map{|ref|
         foreign_key = ref.foreign_key
         if "left_side_id" == ref.foreign_key
           foreign_key = ref.klass.reflect_on_all_associations.first.foreign_key
@@ -54,37 +58,62 @@ module SeedBuilder
       }
     end
 
-    # TODO: 見直し対象
-    # polymorphicの外部キーとモデルリストを返す
+    # foreign keys and polymorphic type of polymorphic
+    #
+    # [{
+    #   foreign_key: "key name",
+    #   type: "polymorphic type"
+    # }]
+    #
+    # @return [Array<Hash>]
     def polymorphic_columns
       return @polymorphic_columns unless @polymorphic_columns.nil?
       @polymorphic_columns = []
-      entities = Domain.new.entities
       polymorphic_associations.each do |ref|
         @polymorphic_columns << { type: ref.name.to_s, foreign_key: ref.foreign_key }
       end
       @polymorphic_columns
     end
 
-    def polymorphic_associations
-      reflect_on_all_associations.select{|ref| ref.options[:polymorphic] }
-    end
 
-    # ポリモーフィックの参照先（親）のリレーション情報配列を返す
-    # ポリモーフィックモデル自身から参照先を割り出すことができないので、
-    # 全モデルから参照しているかどうかを取りに行く（ちょっと非効率）。
+    private
+
+    # Returns the polymorphic association to itself
+    # from the relation information of the reference source
+    #
+    # @return [Array<Object>]
     def polymorphic_belongs
       entities = Domain.new.entities
       entities.map{|e| e.reflect_on_all_associations}.flatten.select{|ref| ref.options[:as] && name == ref.class_name }
     end
 
+    # polymorphic associations
+    #
+    # @return [Array<Object>]
+    def polymorphic_associations
+      reflect_on_all_associations.select{|ref| ref.options[:polymorphic] }
+    end
+
+    # only belongs_to association and excluding polymorphic
+    #
+    # @param [Object] ref
+    # @return [Boolean]
+    def foreign_association ref
+      return false if ref.options[:polymorphic]
+      return true if ref.is_a? ActiveRecord::Reflection::BelongsToReflection
+      false
+    end
+
   end
 
-  # モデルオブジェクトのアトリビューション自身でデータをセットできるようにする
   module EntityObject
 
+    # Return SeedBuilder::Attribute objects
+    #
     # Usage:
     #   HogeModel.new.attribute_collection
+    #
+    # @return [Array<SeedBuilder::Attribute>]
     def attribute_collection
       @attribute_collection ||= AttributeCollection.new(
         self.class.attribute_types.map do |key, active_model_type|
@@ -93,9 +122,11 @@ module SeedBuilder
       )
     end
 
-    # アトリビューション名で直接オブジェクトを参照できるようにする
+    # Call SeedBuilder::Attribute object with field name
+    #
     # Usage:
-    #   HogeModel.new.attribute_collection.key_name
+    #   HogeModel.new.attribute_collection.field_name
+    #
     class AttributeCollection < Array
       def method_missing(method, *args)
         self.find{|attr| method.to_s == attr.key}
