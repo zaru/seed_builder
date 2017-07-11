@@ -45,7 +45,7 @@ module SeedBuilder
     # }
     #
     def foreign_keys
-      reflect_on_all_associations.select{|ref| !ref.options[:polymorphic] }.map{|ref|
+      reflect_on_all_associations.select{|ref| foreign_association(ref) }.map{|ref|
         foreign_key = ref.foreign_key
         if "left_side_id" == ref.foreign_key
           foreign_key = ref.klass.reflect_on_all_associations.first.foreign_key
@@ -76,6 +76,16 @@ module SeedBuilder
     def polymorphic_belongs
       entities = Domain.new.entities
       entities.map{|e| e.reflect_on_all_associations}.flatten.select{|ref| ref.options[:as] && name == ref.class_name }
+    end
+
+    private
+
+    # @param [Object] ref
+    # @return [Boolean]
+    def foreign_association ref
+      return false if ref.options[:polymorphic]
+      return true if ref.is_a? ActiveRecord::Reflection::BelongsToReflection
+      false
     end
 
   end
