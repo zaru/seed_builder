@@ -31,7 +31,7 @@ module SeedBuilder
       end.map do |ref|
         if ref.is_a? ActiveRecord::Reflection::HasAndBelongsToManyReflection
           # has_and_belongs_to_manyの場合、1つの中間モデルが2つのモデルになってしまうので、片方に寄せる
-          first, last = ref.klass.name > ref.active_record.name.pluralize ?
+          first, last = ref.klass.name < ref.active_record.name.pluralize ?
             [ref.klass.name, ref.active_record.name.pluralize] : [ref.active_record.name.pluralize, ref.klass.name]
           relation_name = "#{first.singularize}::HABTM_#{last.pluralize}"
           klass = Object.const_get relation_name
