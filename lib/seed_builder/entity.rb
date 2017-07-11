@@ -37,13 +37,16 @@ module SeedBuilder
       entity.save
     end
 
-    # polymorphic関連を除いた指定モデルの外部キーリストを生成する
+    # foreign keys only belongs_to association
+    # and excluding polymorphic
     #
-    # {
-    #   foreign_key: 外部キー名
-    #   klass: 外部キークラス
-    # }
     #
+    # [{
+    #   foreign_key: "key name",
+    #   klass: Klass
+    # }]
+    #
+    # @return [Array<Hash>]
     def foreign_keys
       reflect_on_all_associations.select{|ref| foreign_association(ref) }.map{|ref|
         foreign_key = ref.foreign_key
@@ -54,21 +57,25 @@ module SeedBuilder
       }
     end
 
-    # TODO: 見直し対象
-    # polymorphicの外部キーとモデルリストを返す
+    # foreign keys and polymorphic type of polymorphic
+    #
+    # [{
+    #   foreign_key: "key name",
+    #   type: "polymorphic type"
+    # }]
+    #
+    # @return [Array<Hash>]
     def polymorphic_columns
       return @polymorphic_columns unless @polymorphic_columns.nil?
       @polymorphic_columns = []
-      entities = Domain.new.entities
       polymorphic_associations.each do |ref|
         @polymorphic_columns << { type: ref.name.to_s, foreign_key: ref.foreign_key }
       end
       @polymorphic_columns
     end
 
-    def polymorphic_associations
-      reflect_on_all_associations.select{|ref| ref.options[:polymorphic] }
-    end
+
+    private
 
     # ポリモーフィックの参照先（親）のリレーション情報配列を返す
     # ポリモーフィックモデル自身から参照先を割り出すことができないので、
@@ -78,7 +85,9 @@ module SeedBuilder
       entities.map{|e| e.reflect_on_all_associations}.flatten.select{|ref| ref.options[:as] && name == ref.class_name }
     end
 
-    private
+    def polymorphic_associations
+      reflect_on_all_associations.select{|ref| ref.options[:polymorphic] }
+    end
 
     # @param [Object] ref
     # @return [Boolean]
