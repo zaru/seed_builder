@@ -9,7 +9,7 @@ module SeedBuilder
 
     # TODO: refactor name
     # 対象モデルのデータを生成して保存する
-    def create
+    def auto_create
       entity = new
       entity.attribute_collection.each do |attribute|
         attribute.build
