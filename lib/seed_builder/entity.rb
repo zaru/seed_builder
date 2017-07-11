@@ -1,4 +1,4 @@
-# このモジュールを require するのは…rakeタスクの中にしたほうが良い気がする。
+# TODO: このモジュールを require するのは…rakeタスクの中にしたほうが良い気がする。
 # そうしないとActiveRecordを常に拡張した状態になってしまう。
 
 module SeedBuilder
@@ -7,6 +7,7 @@ module SeedBuilder
 
     @@attributes = {}
 
+    # TODO: refactor name
     # 対象モデルのデータを生成して保存する
     def create
       entity = new
@@ -77,18 +78,24 @@ module SeedBuilder
 
     private
 
-    # ポリモーフィックの参照先（親）のリレーション情報配列を返す
-    # ポリモーフィックモデル自身から参照先を割り出すことができないので、
-    # 全モデルから参照しているかどうかを取りに行く（ちょっと非効率）。
+    # Returns the polymorphic association to itself
+    # from the relation information of the reference source
+    #
+    # @return [Array<Object>]
     def polymorphic_belongs
       entities = Domain.new.entities
       entities.map{|e| e.reflect_on_all_associations}.flatten.select{|ref| ref.options[:as] && name == ref.class_name }
     end
 
+    # polymorphic associations
+    #
+    # @return [Array<Object>]
     def polymorphic_associations
       reflect_on_all_associations.select{|ref| ref.options[:polymorphic] }
     end
 
+    # only belongs_to association and excluding polymorphic
+    #
     # @param [Object] ref
     # @return [Boolean]
     def foreign_association ref
@@ -99,11 +106,14 @@ module SeedBuilder
 
   end
 
-  # モデルオブジェクトのアトリビューション自身でデータをセットできるようにする
   module EntityObject
 
+    # Return SeedBuilder::Attribute objects
+    #
     # Usage:
     #   HogeModel.new.attribute_collection
+    #
+    # @return [Array<SeedBuilder::Attribute>]
     def attribute_collection
       @attribute_collection ||= AttributeCollection.new(
         self.class.attribute_types.map do |key, active_model_type|
@@ -112,9 +122,11 @@ module SeedBuilder
       )
     end
 
-    # アトリビューション名で直接オブジェクトを参照できるようにする
+    # Call SeedBuilder::Attribute object with field name
+    #
     # Usage:
-    #   HogeModel.new.attribute_collection.key_name
+    #   HogeModel.new.attribute_collection.field_name
+    #
     class AttributeCollection < Array
       def method_missing(method, *args)
         self.find{|attr| method.to_s == attr.key}
