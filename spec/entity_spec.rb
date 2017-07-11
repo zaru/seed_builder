@@ -70,6 +70,27 @@ RSpec.describe SeedBuilder::EntityBase do
       end
     end
 
+  end
 
+  describe "polymorphic_columns" do
+    context "polymorphic" do
+      it "should be included polymorphic type and foreign key" do
+        ModelGenerator::create_model(:books) do
+          string :name, null: false
+
+          has_many :reviews, as: :messagable
+        end
+
+        ModelGenerator::create_model(:reviews) do
+          string :comment, null: false
+          references :messagable, polymorphic: true
+          belongs_to :messagable, polymorphic: true
+        end
+
+        expect(Review.polymorphic_columns).to match [
+                                                      a_hash_including( type: "messagable", foreign_key: "messagable_id")
+                                                    ]
+      end
+    end
   end
 end
