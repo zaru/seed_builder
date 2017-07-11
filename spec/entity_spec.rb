@@ -93,4 +93,27 @@ RSpec.describe SeedBuilder::EntityBase do
       end
     end
   end
+
+  describe "attribute_collection" do
+    it "should be included SeedBuilder::Attribute object" do
+      ModelGenerator::create_model(:users) do
+        string :name
+      end
+
+      expect(User.new.attribute_collection).to be_all {|obj| obj.is_a? SeedBuilder::Attribute }
+    end
+  end
+
+  describe "method_missing" do
+    it "should be call SeedBuilder::Attribute object with field name" do
+      ModelGenerator::create_model(:users) do
+        string :name
+      end
+
+      expect(User.new.attribute_collection.id).to be_a SeedBuilder::Attribute
+      expect(User.new.attribute_collection.name).to be_a SeedBuilder::Attribute
+      expect(User.new.attribute_collection.created_at).to be_a SeedBuilder::Attribute
+      expect(User.new.attribute_collection.updated_at).to be_a SeedBuilder::Attribute
+    end
+  end
 end
