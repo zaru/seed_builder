@@ -65,7 +65,7 @@
 #     references :user, index: true, null: false
 #   end
 #
-# 
+#
 #   Validation example.
 #
 #   ModelGenerator::create_model(:users) do
@@ -221,8 +221,8 @@ module ModelGenerator
           Object.const_get(class_name).send assoc[:type], assoc[:model], *assoc[:options]
         end
       end
-      @validations.each do |assoc|
-        Object.const_get(class_name).send :validates, *assoc
+      @validations.each do |validate|
+        Object.const_get(class_name).send :validates, *validate
       end
     end
   end
