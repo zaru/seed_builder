@@ -6,6 +6,17 @@ RSpec.describe SeedBuilder::EntityBase do
     ModelGenerator::Reset.new.all
   end
 
+  describe "auto_create" do
+    it "should be save data" do
+      ModelGenerator::create_model(:users) do
+        string :name, null: false
+      end
+
+      expect(User.auto_create).to be_truthy
+      expect(User.all.size).to eq 1
+    end
+  end
+
   describe "foreign_keys" do
 
     context "normal association" do
