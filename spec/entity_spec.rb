@@ -7,14 +7,27 @@ RSpec.describe SeedBuilder::EntityBase do
   end
 
   describe "auto_create" do
-    it "should be save data" do
+    it "should be save data of string type" do
       ModelGenerator::create_model(:users) do
         string :name, null: false
+        validates :name, presence: true, uniqueness: true, length: { in: 6..20 }
       end
 
       expect(User.auto_create).to be_truthy
       expect(User.all.size).to eq 1
     end
+
+    it "should be save data of numeric type" do
+      ModelGenerator::create_model(:users) do
+        integer :name, null: false
+        validates :name, numericality: true
+      end
+
+      expect(User.auto_create).to be_truthy
+      expect(User.all.size).to eq 1
+    end
+
+    # TODO: add other condition test case
   end
 
   describe "foreign_keys" do
