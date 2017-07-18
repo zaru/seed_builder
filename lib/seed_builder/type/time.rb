@@ -1,6 +1,6 @@
 module SeedBuilder
   module Type
-    class Boolean < Base
+    class Time < Base
       def generate
         Time.now
       end
