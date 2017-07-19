@@ -72,6 +72,17 @@
 #     string :name
 #     validates :name, presence: true
 #   end
+#
+#
+#   Other method example.
+#
+#   class IconUploader < CarrierWave::Uploader::Base
+#     storage :file
+#   end
+#   ModelGenerator::create_model(:users) do
+#     string :icon, null: false
+#     mount_uploader :avatar, IconUploader
+#   end
 module ModelGenerator
 
   # @param [Symbol] model_name
@@ -172,6 +183,11 @@ module ModelGenerator
       @columns = []
       @associations = []
       @validations = []
+      @commands = []
+    end
+
+    def class_name
+      @class_name ||= @name.to_s.classify
     end
 
     def name= name
@@ -208,7 +224,6 @@ module ModelGenerator
     end
 
     def generate_model
-      class_name = @name.to_s.classify
       if @inherit_name
         Object.const_set class_name, Class.new(Object.const_get(@inherit_name.to_s.classify))
       else
@@ -224,6 +239,13 @@ module ModelGenerator
       @validations.each do |validate|
         Object.const_get(class_name).send :validates, *validate
       end
+      @commands.each do |cmd|
+        Object.const_get(class_name).send cmd[0], *cmd[1]
+      end
+    end
+
+    def method_missing name, *args
+      @commands << [name, args]
     end
   end
 end
