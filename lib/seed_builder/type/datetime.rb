@@ -6,7 +6,7 @@ module SeedBuilder
       end
 
       def generate
-        Time.now
+        ::Time.now
       end
     end
   end
