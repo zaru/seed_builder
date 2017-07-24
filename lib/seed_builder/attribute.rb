@@ -46,6 +46,7 @@ module SeedBuilder
     # CarrierWaveかどうか判定
     # 一度モデルをインスタンスにしないと判定できない
     def carrier_wave?
+      return false unless defined? CarrierWave
       @entity.new.send(@key).is_a? CarrierWave::Uploader::Base
     end
 

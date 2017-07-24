@@ -2,6 +2,10 @@ require "bundler/setup"
 require "seed_builder"
 require "pry"
 
+require "carrierwave"
+require "paperclip"
+require "carrierwave/orm/activerecord"
+
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
