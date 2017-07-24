@@ -35,6 +35,7 @@ module SeedBuilder
         end
       end
 
+      binding.pry
       entity.save
     end
 
