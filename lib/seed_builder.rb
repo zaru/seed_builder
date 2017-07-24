@@ -2,7 +2,8 @@ require "seed_builder/version"
 require "active_record"
 require "pry"
 
-require "carrierwave"
+require "carrierwave" # TODO: fix to require if it exists
+require "paperclip"
 require "carrierwave/orm/activerecord"
 
 require "seed_builder/core"
