@@ -3,7 +3,7 @@ module SeedBuilder
 
     def initialize
       ActiveRecord::Base.clear_cache!
-      # Rails.application.eager_load! #TODO: rakeタスクとかに移譲する
+      Rails.application.eager_load! if defined? Rails
     end
 
     # モデルの一覧を返す
