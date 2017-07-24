@@ -9,6 +9,9 @@ module SeedBuilder
       def generate
         validator_names = validators.map{|m| m.class.name.demodulize}
 
+        # email の場合はバリデーションを無視して問答無用でメールアドレス文字列を返す
+        return email_str if @key == "email"
+
         case validator_names
 
           # Regex だけを考える
@@ -30,6 +33,10 @@ module SeedBuilder
 
 
       private
+
+      def email_str
+        "example@example.com"
+      end
 
       def formatted_str
         # NOTE: 複数の FormatValidator が存在しうるが、それを考慮するのは、
