@@ -76,6 +76,8 @@
 #
 #   Other method example.
 #
+#   CarrierWave
+#
 #   class IconUploader < CarrierWave::Uploader::Base
 #     storage :file
 #   end
@@ -83,6 +85,18 @@
 #     string :icon, null: false
 #     mount_uploader :avatar, IconUploader
 #   end
+#
+#
+#   Paperclip
+#
+#   ModelGenerator::create_model(:users) do
+#     attachment :icon
+#     has_attached_file :icon,
+#                       styles: { medium: "300x300>", thumb: "100x100>" },
+#                       path: "uploads/tmp/:class/:id/:attachment/:style.:extension"
+#     validates_attachment_content_type :icon, content_type: /\Aimage\/.*\z/
+#   end
+
 module ModelGenerator
 
   # @param [Symbol] model_name
@@ -167,7 +181,9 @@ module ModelGenerator
 
   class Model
 
-    %w(string text integer float decimal datetime timestamp time date binary boolean references).each do |type|
+    include Paperclip::Schema
+
+    %w(string text integer float decimal datetime timestamp time date binary boolean references attachment).each do |type|
       define_method type do |*attr|
         @columns << ([type].concat attr)
       end
@@ -240,8 +256,12 @@ module ModelGenerator
         Object.const_get(class_name).send :validates, *validate
       end
       @commands.each do |cmd|
+        if :has_attached_file == cmd[0]
+          Object.const_get(class_name).include Paperclip::Glue
+        end
         Object.const_get(class_name).send cmd[0], *cmd[1]
       end
+
     end
 
     def method_missing name, *args
