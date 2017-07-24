@@ -35,7 +35,7 @@ module SeedBuilder
       private
 
       def email_str
-        "example@example.com"
+        "#{SecureRandom.hex(8)}@example.com"
       end
 
       def formatted_str
