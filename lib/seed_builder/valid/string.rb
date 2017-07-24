@@ -9,6 +9,9 @@ module SeedBuilder
       def generate
         validator_names = validators.map{|m| m.class.name.demodulize}
 
+        # When key is "email", ignore validations.
+        return email_str if @key == "email"
+
         case validator_names
 
           # Regex だけを考える
@@ -30,6 +33,10 @@ module SeedBuilder
 
 
       private
+
+      def email_str
+        "#{SecureRandom.hex(8)}@example.com"
+      end
 
       def formatted_str
         # NOTE: 複数の FormatValidator が存在しうるが、それを考慮するのは、
