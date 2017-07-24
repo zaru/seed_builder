@@ -9,7 +9,7 @@ module SeedBuilder
       def generate
         validator_names = validators.map{|m| m.class.name.demodulize}
 
-        # email の場合はバリデーションを無視して問答無用でメールアドレス文字列を返す
+        # When key is "email", ignore validations.
         return email_str if @key == "email"
 
         case validator_names
