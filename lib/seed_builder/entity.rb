@@ -35,7 +35,15 @@ module SeedBuilder
         end
       end
 
+      # Insert an image in paperclip column.
+      if respond_to? :attachment_definitions
+        attachment_definitions.each do |attach_key, option|
+          SeedBuilder::Upload::Paperclip.new(entity, attach_key).value
+        end
+      end
+
       entity.save
+      entity
     end
 
     # foreign keys only belongs_to association
