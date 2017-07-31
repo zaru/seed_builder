@@ -1,5 +1,5 @@
 require 'faker'
-require 'seed_builder/customized_faker'
+require 'regex_sample'
 require 'seed_builder/valid/string'
 require 'seed_builder/valid/integer'
 

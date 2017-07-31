@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "activerecord", ">= 4.1"
   spec.add_runtime_dependency "activesupport", ">= 4.1"
   spec.add_runtime_dependency "faker"
+  # spec.add_runtime_dependency "regex_sample" これ必要なのかなぁ..なくてもうごくような..
 
   spec.add_development_dependency "bundler", "~> 1.14"
   spec.add_development_dependency "rake", "~> 10.0"

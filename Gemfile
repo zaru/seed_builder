@@ -4,3 +4,4 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'faker'
+gem 'regex_sample'
