@@ -57,12 +57,7 @@ RSpec.describe SeedBuilder::Attribute do
       it "should be valid data by regex" do
         ModelGenerator::create_model(:users) do
           string :name, null: false
-
-          # TODO: たとえば以下のような正規表現にはまだ対応していない。
-          # [\-] このような書き方が難しい。Faker で対応しきれていない。
-          # validates :name, format: /\A(foo)[0-9]{1,4}[\-\/]{1}[a-z]{2}(baz)\z/
-
-          validates :name, format: /\A(foo)[0-9]{1,4}[-\/]{5}[a-z]{2}(baz)\z/
+          validates :name, format: /\A(foo)[0-9]{1,4}[\-\/]{1}[a-z]{2}(baz)\z/
         end
         user = User.new
         user.attribute_collection.name.build

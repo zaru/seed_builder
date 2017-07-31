@@ -42,7 +42,7 @@ module SeedBuilder
         # NOTE: 複数の FormatValidator が存在しうるが、それを考慮するのは、
         # 大変すぎる気がするので、一番最後のものだけを反映させてます。ひとまず..
         regex = format_validators.map{|m| m.options[:with]}.last
-        CustomizedFaker::Base.regexify(regex)
+        RegexSample.generate(regex)
       end
 
       def validators
