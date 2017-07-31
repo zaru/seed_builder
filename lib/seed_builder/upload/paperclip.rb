@@ -8,7 +8,8 @@ module SeedBuilder
       end
 
       def value
-        File.open("files/test.#{ext}") do |file|
+        path = File.expand_path(File.join(File.dirname(__FILE__), "../../../files/test.#{ext}"))
+        File.open(path) do |file|
           @entity.send(@key.to_s + "=", file)
         end
       end
@@ -38,7 +39,7 @@ module SeedBuilder
       # @return [String]
       def content_type
         return @content_type unless @content_type.nil?
-        @content_type ||= content_type_validator.nil? ? nil : content_type_validator[:content_type].to_s
+        @content_type ||= content_type_validator.nil? ? nil : content_type_validator.options[:content_type].to_s
       end
 
       # Return AttachmentContentTypeValidator object
@@ -46,7 +47,7 @@ module SeedBuilder
       # @return [Object]
       def content_type_validator
         content_type_validator = @entity._validators[@key].select do |validator|
-          validator.is_a? Paperclip::Validators::AttachmentContentTypeValidator
+          validator.is_a? ::Paperclip::Validators::AttachmentContentTypeValidator
         end
         content_type_validator.size.zero? ? nil : content_type_validator.first
       end

@@ -26,11 +26,15 @@ module SeedBuilder
       end
 
       if carrier_wave?
-        return Upload::CarrierWave.new(@model_object, @key)
+        return SeedBuilder::Upload::CarrierWave.new(@model_object, @key).value
       end
 
+      # Paperclip has multiple columns.
+      # However, file insertion is a virtual column.
+      # Therefore, it is not inserted here.
+      # Do it in Entity.auto_create.
       if paperclip?
-        return @model_object[@key] = "paper clip data"
+        return
       end
 
       # NOTE: いったん、わかりやすさのため tmp var 使う
@@ -46,11 +50,17 @@ module SeedBuilder
     # CarrierWaveかどうか判定
     # 一度モデルをインスタンスにしないと判定できない
     def carrier_wave?
+      return false unless defined? CarrierWave
       @entity.new.send(@key).is_a? CarrierWave::Uploader::Base
     end
 
-    # TODO: paperclip対応
     def paperclip?
+      return false unless defined? Paperclip
+      return false unless @entity.respond_to? :attachment_definitions
+      @entity.attachment_definitions.each do |attach_key, option|
+        regex = /\A#{attach_key}_(file_name|content_type|file_size|updated_at)\z/
+        return true if @key =~ regex
+      end
       false
     end
 

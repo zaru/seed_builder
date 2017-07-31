@@ -8,7 +8,8 @@ module SeedBuilder
       end
 
       def value
-        File.open("files/test.#{ext}") do |file|
+        path = File.expand_path(File.join(File.dirname(__FILE__), "../../../files/test.#{ext}"))
+        File.open(path) do |file|
           @entity.send(@key.to_s + "=", file)
         end
       end
