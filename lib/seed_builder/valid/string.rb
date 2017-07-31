@@ -63,8 +63,11 @@ module SeedBuilder
 
       # @return [Integer] 文字数
       def num_of_chars
-        # ex) {:minimum=>5, :maximum=>9}
+        # ex) {:minimum=>5, :maximum=>9} or {:is=>7}
         merged_options = length_validators.map(&:options).inject({}, :merge)
+
+        is = merged_options[:is]
+        return is if is
 
         minimum = merged_options[:minimum] || 0
         maximum = merged_options[:maximum] || 16
