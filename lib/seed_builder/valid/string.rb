@@ -14,20 +14,20 @@ module SeedBuilder
 
         case validator_names
 
-          # Regex だけを考える
-          when include_format?
-            return formatted_str
+        when include_inclusion?
+          return included_str
 
-          # Integer を返す
-          when include_numericality?
-            first_str = rand(1..9).to_s
-            rest_str = (1...num_of_chars).map{rand(0..9)}.join
-            return data = first_str + rest_str
+        when include_format?
+          return formatted_str
 
-          # String を返す
-          else
-            data = (1..num_of_chars).map{('a'..'z').to_a[rand(26)]}.join
-            return data
+        when include_numericality?
+          first_str = rand(1..9).to_s
+          rest_str = (1...num_of_chars).map{rand(0..9)}.join
+          return data = first_str + rest_str
+
+        else
+          data = (1..num_of_chars).map{('a'..'z').to_a[rand(26)]}.join
+          return data
         end
       end
 
@@ -36,6 +36,11 @@ module SeedBuilder
 
       def email_str
         "#{SecureRandom.hex(8)}@example.com"
+      end
+
+      def included_str
+        arr = inclusion_validator.options[:in]
+        arr.sample
       end
 
       def formatted_str
@@ -53,6 +58,13 @@ module SeedBuilder
         validators.select{ |m|
           m.class.name.demodulize == "LengthValidator"
         }
+      end
+
+      # NOTE: Use last validator
+      def inclusion_validator
+        validators.select{ |m|
+          m.class.name.demodulize == "InclusionValidator"
+        }.last
       end
 
       def format_validators
@@ -74,6 +86,10 @@ module SeedBuilder
         rand(minimum..maximum)
       end
 
+
+      def include_inclusion?
+        ->(arr){ arr.include? "InclusionValidator" }
+      end
 
       def include_format?
         ->(arr){ arr.include? "FormatValidator" }
