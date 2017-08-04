@@ -37,6 +37,10 @@ module SeedBuilder
         return
       end
 
+      if enumerize?
+        return @model_object[@key] = @entity.send(@key).send(:values).sample
+      end
+
       # NOTE: いったん、わかりやすさのため tmp var 使う
       data = ValidData.new(
                   type_name:    @type_name,
@@ -71,6 +75,13 @@ module SeedBuilder
       return true if @entity.foreign_keys.find{|f| @key == f[:foreign_key] }
       return true if "left_side_id" == @key
       false
+    end
+
+    # enumerize field
+    def enumerize?
+      return false unless defined? Enumerize
+      return false unless @entity.respond_to? :enumerized_attributes
+      @entity.enumerized_attributes.attributes.keys.include? @key
     end
 
     # 外部クラス

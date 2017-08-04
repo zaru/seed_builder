@@ -40,4 +40,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry"
   spec.add_development_dependency "carrierwave", "~> 1.0"
   spec.add_development_dependency "paperclip", "~> 5.0"
+  spec.add_development_dependency "enumerize", "~> 2"
 end

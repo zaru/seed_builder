@@ -5,6 +5,7 @@ require "pry"
 require "carrierwave"
 require "paperclip"
 require "carrierwave/orm/activerecord"
+require "enumerize"
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
