@@ -79,6 +79,8 @@ module SeedBuilder
 
     # enumerize field
     def enumerize?
+      return false unless defined? Enumerize
+      return false unless @entity.respond_to? :enumerized_attributes
       @entity.enumerized_attributes.attributes.keys.include? @key
     end
 
