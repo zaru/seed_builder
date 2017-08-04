@@ -2,6 +2,8 @@ module SeedBuilder
   module Upload
     class CarrierWave
 
+      include SeedBuilder::Upload::ContentType
+
       def initialize model, key
         @entity = model
         @key = key
@@ -22,7 +24,7 @@ module SeedBuilder
         end
 
         unless content_type_whitelist.nil?
-          return content_type
+          return match_content_type content_type_whitelist
         end
 
         "jpg"
@@ -30,20 +32,6 @@ module SeedBuilder
 
       def content_type_whitelist
         @entity.send(@key).content_type_whitelist.to_s
-      end
-
-      def content_type
-        if content_type_whitelist =~ /jpe?g/
-          "jpg"
-        elsif content_type_whitelist =~ /png/
-          "png"
-        elsif content_type_whitelist =~ /gif/
-          "gif"
-        elsif content_type_whitelist =~ /pdf/
-          "pdf"
-        else
-          "jpg"
-        end
       end
 
     end

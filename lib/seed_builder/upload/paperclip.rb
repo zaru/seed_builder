@@ -2,6 +2,8 @@ module SeedBuilder
   module Upload
     class Paperclip
 
+      include SeedBuilder::Upload::ContentType
+
       def initialize model, key
         @entity = model
         @key = key
@@ -20,17 +22,7 @@ module SeedBuilder
       #
       # @return [String]
       def ext
-        if content_type =~ /jpe?g/
-          "jpg"
-        elsif content_type =~ /png/
-          "png"
-        elsif content_type =~ /gif/
-          "gif"
-        elsif content_type =~ /pdf/
-          "pdf"
-        else
-          "jpg"
-        end
+        match_content_type content_type
       end
 
       # Return regex string for content_type
