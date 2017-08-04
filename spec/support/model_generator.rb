@@ -256,8 +256,11 @@ module ModelGenerator
         Object.const_get(class_name).send :validates, *validate
       end
       @commands.each do |cmd|
-        if :has_attached_file == cmd[0]
-          Object.const_get(class_name).include Paperclip::Glue
+        case cmd[0]
+          when :has_attached_file
+            Object.const_get(class_name).include Paperclip::Glue
+          when :enumerize
+            Object.const_get(class_name).extend Enumerize
         end
         Object.const_get(class_name).send cmd[0], *cmd[1]
       end

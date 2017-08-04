@@ -120,6 +120,20 @@ RSpec.describe SeedBuilder::Attribute do
       end
     end
 
+    context "enumerize gem" do
+      it "should be valid data by enumerize" do
+        ModelGenerator::create_model(:users) do
+          string :sex, null: false
+          enumerize :sex, in: [:male, :female]
+        end
+
+        user = User.new
+        user.attribute_collection.sex.build
+        expect(user.valid_attribute?(:sex)).to be_truthy
+        expect(%w(male female).include?(user.sex)).to be_truthy
+      end
+    end
+
     context "integer type" do
     end
     context "boolean type" do

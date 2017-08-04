@@ -6,6 +6,7 @@ require "seed_builder"
 require "carrierwave"
 require "paperclip"
 require "carrierwave/orm/activerecord"
+require "enumerize"
 
 Dir["./spec/support/**/*.rb"].each { |f| require f }
 
