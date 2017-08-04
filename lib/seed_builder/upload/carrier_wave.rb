@@ -2,6 +2,8 @@ module SeedBuilder
   module Upload
     class CarrierWave
 
+      include SeedBuilder::Upload::ContentType
+
       def initialize model, key
         @entity = model
         @key = key
@@ -17,11 +19,19 @@ module SeedBuilder
       private
 
       def ext
-        if @entity.send(@key).extension_whitelist.nil?
-          "jpg"
-        else
-          @entity.send(@key).extension_whitelist.sample
+        unless @entity.send(@key).extension_whitelist.nil?
+          return @entity.send(@key).extension_whitelist.sample
         end
+
+        unless content_type_whitelist.nil?
+          return match_content_type content_type_whitelist
+        end
+
+        "jpg"
+      end
+
+      def content_type_whitelist
+        @entity.send(@key).content_type_whitelist.to_s
       end
 
     end
