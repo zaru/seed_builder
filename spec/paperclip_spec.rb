@@ -19,6 +19,7 @@ RSpec.describe SeedBuilder::Upload::Paperclip do
       user = User.new
       upload = SeedBuilder::Upload::Paperclip.new user, "icon"
       upload.value
+      # TODO: This test case, is this OK...? 🤔
       expect(user.icon.file?).to be_truthy
     end
   end
