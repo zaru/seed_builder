@@ -17,10 +17,32 @@ module SeedBuilder
       private
 
       def ext
-        if @entity.send(@key).extension_whitelist.nil?
+        unless @entity.send(@key).extension_whitelist.nil?
+          return @entity.send(@key).extension_whitelist.sample
+        end
+
+        unless content_type_whitelist.nil?
+          return content_type
+        end
+
+        "jpg"
+      end
+
+      def content_type_whitelist
+        @entity.send(@key).content_type_whitelist.to_s
+      end
+
+      def content_type
+        if content_type_whitelist =~ /jpe?g/
           "jpg"
+        elsif content_type_whitelist =~ /png/
+          "png"
+        elsif content_type_whitelist =~ /gif/
+          "gif"
+        elsif content_type_whitelist =~ /pdf/
+          "pdf"
         else
-          @entity.send(@key).extension_whitelist.sample
+          "jpg"
         end
       end
 
