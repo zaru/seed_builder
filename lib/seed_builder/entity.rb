@@ -42,6 +42,8 @@ module SeedBuilder
         end
       end
 
+      entity.fill_acceptance
+
       entity.save
       entity
     end
@@ -115,6 +117,19 @@ module SeedBuilder
   end
 
   module EntityObject
+
+    # Returns an Entity object with a value in the acceptance validation field
+    #
+    def fill_acceptance
+      validators = _validators.select do |k, v|
+        v.select do |validator|
+          validator.is_a?(ActiveModel::Validations::AcceptanceValidator)
+        end.size > 0
+      end
+      validators.each do |key, arr|
+        send "#{key}=", true
+      end
+    end
 
     # Return SeedBuilder::Attribute objects
     #

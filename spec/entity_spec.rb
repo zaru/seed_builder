@@ -28,6 +28,17 @@ RSpec.describe SeedBuilder::EntityBase do
     end
 
     # TODO: add other condition test case
+
+    context "acceptance validator" do
+      it "should be save data when acceptance validator" do
+        ModelGenerator::create_model(:users) do
+          validates :terms_of_service, acceptance: true, allow_blank: false, allow_nil: false
+        end
+
+        expect(User.auto_create).to be_truthy
+        expect(User.all.size).to eq 1
+      end
+    end
   end
 
   describe "foreign_keys" do
@@ -115,6 +126,20 @@ RSpec.describe SeedBuilder::EntityBase do
                                                       a_hash_including( type: "messagable", foreign_key: "messagable_id")
                                                     ]
       end
+    end
+  end
+
+  describe "fill_acceptance" do
+    it "should be contain true in acceptance field" do
+      ModelGenerator::create_model(:users) do
+        validates :terms_of_service, acceptance: true, allow_blank: false, allow_nil: false
+      end
+
+      user = User.new
+      expect(user.terms_of_service).to be_nil
+
+      user.fill_acceptance
+      expect(user.terms_of_service).to be_truthy
     end
   end
 
