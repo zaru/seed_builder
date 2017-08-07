@@ -39,6 +39,18 @@ RSpec.describe SeedBuilder::EntityBase do
         expect(User.all.size).to eq 1
       end
     end
+
+    context "attr_accesor validator" do
+      it "should be save data when attr_accesor validator" do
+        ModelGenerator::create_model(:users) do
+          attr_accessor :agreement
+          validates :agreement, presence: true
+        end
+
+        expect(User.auto_create).to be_truthy
+        expect(User.all.size).to eq 1
+      end
+    end
   end
 
   describe "foreign_keys" do
@@ -150,6 +162,17 @@ RSpec.describe SeedBuilder::EntityBase do
       end
 
       expect(User.new.attribute_collection).to be_all {|obj| obj.is_a? SeedBuilder::Attribute }
+    end
+
+    context "attr_accesor" do
+      it "attr_accesor fileds should be included SeedBuilder::Attribute" do
+        ModelGenerator::create_model(:users) do
+          attr_accessor :agreement
+          validates :agreement, presence: true
+        end
+
+        expect(User.new.attribute_collection.any? {|a| a.key == "agreement"}).to be_truthy
+      end
     end
   end
 

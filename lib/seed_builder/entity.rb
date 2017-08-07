@@ -44,6 +44,8 @@ module SeedBuilder
 
       entity.fill_acceptance
 
+
+
       entity.save
       entity
     end
@@ -138,11 +140,17 @@ module SeedBuilder
     #
     # @return [Array<SeedBuilder::Attribute>]
     def attribute_collection
-      @attribute_collection ||= AttributeCollection.new(
+      return @attribute_collection unless @attribute_collection.nil?
+
+      @attribute_collection = AttributeCollection.new(
         self.class.attribute_types.map do |key, active_model_type|
           Attribute.new(key, active_model_type, self.class, self)
         end
       )
+
+      add_attr_accessors
+
+      @attribute_collection
     end
 
     # Call SeedBuilder::Attribute object with field name
@@ -159,6 +167,25 @@ module SeedBuilder
     def valid_attribute?(attribute_name)
       self.valid?
       self.errors[attribute_name].blank?
+    end
+
+    private
+
+    # If there is validation to the field defined by attr_accessor, add it.
+    #
+    # Example model
+    #
+    # class User < ApplicationRecord
+    #   attr_accessor :agreement
+    #   validates :agreement, presence: true
+    # end
+    #
+    def add_attr_accessors
+      self.class._validators.keys.each do |key|
+        unless self.class.attribute_types.keys.include? key.to_s
+          @attribute_collection.push Attribute.new(key.to_s, ActiveModel::Type::String.new, self.class, self)
+        end
+      end
     end
   end
 end
