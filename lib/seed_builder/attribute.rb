@@ -12,17 +12,17 @@ module SeedBuilder
 
     def build
       if auto_generate?
-        return @model_object[@key] = nil
+        return @model_object.send "#{@key}=", nil
       end
 
       if sti_type?
-        return @model_object[@key] = @entity.name
+        return @model_object.send "#{@key}=", @entity.name
       end
 
       if foreign_key?
         # MEMO: すでに親クラスにデータがぞんざいしている前提なので単体だとnilが入る
         # もしかしたら後からの救済メソッドを作っても良いのかもしれない。
-        return @model_object[@key] = foreign_klass.all.sample.id
+        return @model_object.send "#{@key}=", foreign_klass.all.sample.id
       end
 
       if carrier_wave?
@@ -38,7 +38,7 @@ module SeedBuilder
       end
 
       if enumerize?
-        return @model_object[@key] = @entity.send(@key).send(:values).sample
+        return @model_object.send "#{@key}=", @entity.send(@key).send(:values).sample
       end
 
       # NOTE: いったん、わかりやすさのため tmp var 使う
@@ -46,7 +46,7 @@ module SeedBuilder
                   type_name:    @type_name,
                   model_object: @model_object,
                   key:          @key).generate
-      @model_object[@key] = data
+      @model_object.send "#{@key}=", data
     end
 
     private
